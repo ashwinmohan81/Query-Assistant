@@ -54,6 +54,11 @@ async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
+@app.get("/architecture", response_class=HTMLResponse)
+async def architecture(request: Request):
+    return templates.TemplateResponse("architecture.html", {"request": request})
+
+
 @app.post("/api/query")
 async def generate_query(req: QueryRequest):
     cat, store, rtr, gen = get_components()

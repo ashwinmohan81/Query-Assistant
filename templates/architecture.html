@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DEx Query Assistant — Architecture</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #242836;
+    --border: #2e3345;
+    --text: #e4e6f0;
+    --text-muted: #8b8fa3;
+    --accent: #6c8cff;
+    --accent-dim: rgba(108,140,255,0.15);
+    --green: #4ade80;
+    --green-dim: rgba(74,222,128,0.12);
+    --orange: #fbbf24;
+    --orange-dim: rgba(251,191,36,0.12);
+    --red: #f87171;
+    --purple: #a78bfa;
+    --purple-dim: rgba(167,139,250,0.12);
+    --cyan: #22d3ee;
+    --cyan-dim: rgba(34,211,238,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+  }
+  header .left { display: flex; align-items: center; gap: 12px; }
+  header h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+  header .badge {
+    font-size: 11px; padding: 2px 8px; border-radius: 10px;
+    background: var(--accent-dim); color: var(--accent); font-weight: 500;
+  }
+  header a {
+    font-size: 13px; color: var(--accent); text-decoration: none;
+    padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border);
+    transition: all 0.15s;
+  }
+  header a:hover { background: var(--accent-dim); border-color: var(--accent); }
+
+  /* ── Layout ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 32px 80px; }
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 40px; line-height: 1.5; }
+
+  /* ── Stats ── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+  }
+  .stat-card .num {
+    font-size: 28px; font-weight: 700; letter-spacing: -1px;
+    transition: color 0.3s;
+  }
+  .stat-card .num.blue   { color: var(--accent); }
+  .stat-card .num.green  { color: var(--green); }
+  .stat-card .num.orange { color: var(--orange); }
+  .stat-card .num.purple { color: var(--purple); }
+  .stat-card .label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+  /* ── Flow timeline ── */
+  .flow { position: relative; }
+  .flow::before {
+    content: '';
+    position: absolute;
+    left: 24px; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--green), var(--orange), var(--purple), var(--cyan));
+    border-radius: 2px;
+  }
+
+  .step {
+    position: relative;
+    margin-bottom: 32px;
+    padding-left: 64px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .step.visible { opacity: 1; transform: translateY(0); }
+
+  .step-dot {
+    position: absolute; left: 15px; top: 18px;
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 3px solid var(--bg); z-index: 1;
+  }
+  .step-dot.blue   { background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+  .step-dot.green  { background: var(--green);  box-shadow: 0 0 12px var(--green); }
+  .step-dot.orange { background: var(--orange); box-shadow: 0 0 12px var(--orange); }
+  .step-dot.purple { background: var(--purple); box-shadow: 0 0 12px var(--purple); }
+  .step-dot.cyan   { background: var(--cyan);   box-shadow: 0 0 12px var(--cyan); }
+
+  .step-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .step-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(108,140,255,0.06);
+  }
+
+  .step-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .step-num {
+    font-size: 11px; font-weight: 700; padding: 2px 8px;
+    border-radius: 6px; letter-spacing: 0.5px;
+  }
+  .step-num.blue   { background: var(--accent-dim); color: var(--accent); }
+  .step-num.green  { background: var(--green-dim);  color: var(--green); }
+  .step-num.orange { background: var(--orange-dim); color: var(--orange); }
+  .step-num.purple { background: var(--purple-dim); color: var(--purple); }
+  .step-num.cyan   { background: var(--cyan-dim);   color: var(--cyan); }
+
+  .step-title { font-size: 16px; font-weight: 600; }
+  .step-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 14px; }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .detail-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .detail-box.full { grid-column: 1 / -1; }
+  .detail-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 6px;
+  }
+  .detail-value {
+    font-size: 12px; line-height: 1.6;
+    font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+  }
+  .hl-blue   { color: var(--accent); }
+  .hl-green  { color: var(--green); }
+  .hl-orange { color: var(--orange); }
+  .hl-red    { color: var(--red); }
+  .hl-purple { color: var(--purple); }
+  .hl-cyan   { color: var(--cyan); }
+  .dim       { color: var(--text-muted); }
+
+  /* ── Arrow labels between steps ── */
+  .arrow-label {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 4px 0 4px 64px;
+  }
+  .arrow-label::before { content: '\2193  '; font-size: 14px; }
+
+  /* ── Data sources grid ── */
+  .data-sources {
+    margin-top: 48px; padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .data-sources h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+  .source-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .source-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    transition: border-color 0.15s;
+  }
+  .source-item:hover { border-color: var(--accent); }
+  .source-item .slabel {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 4px;
+  }
+  .source-item .name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .source-item .desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+  .tag {
+    display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 4px;
+    margin-top: 6px; font-weight: 500;
+  }
+  .tag.vector { background: var(--accent-dim); color: var(--accent); }
+  .tag.memory { background: var(--green-dim); color: var(--green); }
+  .tag.llm    { background: var(--purple-dim); color: var(--purple); }
+
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .detail-grid { grid-template-columns: 1fr; }
+    .source-grid { grid-template-columns: 1fr; }
+    .step { padding-left: 52px; }
+    .arrow-label { padding-left: 52px; }
+    .flow::before { left: 18px; }
+    .step-dot { left: 9px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="left">
+    <h1>DEx Query Assistant</h1>
+    <span class="badge">Architecture</span>
+  </div>
+  <a href="/">Back to Chat</a>
+</header>
+
+<div class="container">
+  <h2>How your question becomes a query</h2>
+  <p class="subtitle">
+    The pipeline routes your natural-language question to the right data product, assembles relevant context
+    from three vector collections and an in-memory catalog, generates a validated SQL or GraphQL query, and
+    returns it &mdash; all without touching actual data.
+  </p>
+
+  <!-- Live stats -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="num blue" id="stat-products">&mdash;</div>
+      <div class="label">Data Products</div>
+    </div>
+    <div class="stat-card">
+      <div class="num green" id="stat-attrs">&mdash;</div>
+      <div class="label">Attributes Indexed</div>
+    </div>
+    <div class="stat-card">
+      <div class="num orange" id="stat-examples">&mdash;</div>
+      <div class="label">Query Examples</div>
+    </div>
+    <div class="stat-card">
+      <div class="num purple" id="stat-rels">&mdash;</div>
+      <div class="label">Cross-Product Joins</div>
+    </div>
+  </div>
+
+  <!-- Pipeline flow -->
+  <div class="flow">
+
+    <!-- Step 1 -->
+    <div class="step">
+      <div class="step-dot blue"></div>
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-num blue">STEP 1</span>
+          <span class="step-title">Product Routing</span>
+        </div>
+        <div class="step-desc">
+          Your question is converted to a 384-dimension vector using sentence-transformers
+          (all-MiniLM-L6-v2). This vector is compared against all data-product embeddings via
+          cosine similarity in ChromaDB. The top 3 candidates are then reranked by the LLM to
+          select the single best match.
+        </div>
+        <div class="detail-grid">
+          <div class="detail-box">
+            <div class="detail-label">Input</div>
+            <div class="detail-value">
+              <span class="dim">"</span>Show me equity trades on NYSE today<span class="dim">"</span>
+            </div>
+          </div>
+          <div class="detail-box">
+            <div class="detail-label">Output</div>
+            <div class="detail-value">
+              <span class="hl-blue">trade_ledger</span> <span class="dim">(confidence: 0.92)</span>
+            </div>
+          </div>
+          <div class="detail-box full">
+            <div class="detail-label">Pipeline</div>
+            <div class="detail-value">
+              <span class="dim">question &rarr;</span>
+              <span class="hl-blue">embed(384d)</span>
+              <span class="dim">&rarr; cosine search &rarr;</span>
+              <span class="hl-green">top 3 products</span>
+              <span class="dim">&rarr; LLM rerank &rarr;</span>
+              <span class="hl-orange">best match</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="arrow-label">product_id passed downstream</div>
+
+    <!-- Step 2 -->
+    <div class="step">
+      <div class="step-dot green"></div>
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-num green">STEP 2</span>
+          <span class="step-title">Relationship Relevance Filtering</span>
+        </div>
+        <div class="step-desc">
+          The selected product's one-hop relationships are scored against your question using
+          embedding similarity + keyword matching. Only relationships above a relevance threshold
+          get full context injected (schema, rules, value dictionaries). Others are mentioned
+          but not expanded &mdash; preventing noise in the LLM prompt.
+        </div>
+        <div class="detail-grid">
+          <div class="detail-box">
+            <div class="detail-label">All relationships (trade_ledger)</div>
+            <div class="detail-value">
+              instrument_master <span class="dim">via instrument_id</span><br>
+              account_master <span class="dim">via account_id</span><br>
+              party_master <span class="dim">via counterparty_id</span><br>
+              party_master <span class="dim">via broker_id</span>
+            </div>
+          </div>
+          <div class="detail-box">
+            <div class="detail-label">After relevance filtering</div>
+            <div class="detail-value">
+              <span class="hl-green">instrument_master</span> <span class="dim">&mdash; full context</span><br>
+              <span class="dim" style="font-size:11px">&nbsp;&nbsp;(embedding: 0.41, keywords: equity, NYSE)</span><br>
+              <span class="hl-orange">account_master</span> <span class="dim">&mdash; mention only</span><br>
+              <span class="hl-orange">party_master</span> <span class="dim">&mdash; mention only</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="arrow-label">relevant schemas + rules selected</div>
+
+    <!-- Step 3 -->
+    <div class="step">
+      <div class="step-dot orange"></div>
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-num orange">STEP 3</span>
+          <span class="step-title">Context Assembly</span>
+        </div>
+        <div class="step-desc">
+          Five pieces are assembled into a single LLM prompt: the primary product's DDL and
+          business rules, relevant related products' full context, few-shot query examples
+          retrieved via vector search, and a brief mention of other available JOINs.
+        </div>
+        <div class="detail-grid">
+          <div class="detail-box">
+            <div class="detail-label">From in-memory catalog</div>
+            <div class="detail-value">
+              <span class="hl-blue">Primary DDL</span> <span class="dim">&mdash; CREATE TABLE trade_ledger (&hellip;)</span><br>
+              <span class="hl-blue">Primary rules</span> <span class="dim">&mdash; Confirmed: NOT IN (CXL,REJ)</span><br>
+              <span class="hl-green">Related DDL</span> <span class="dim">&mdash; CREATE TABLE instrument_master (&hellip;)</span><br>
+              <span class="hl-green">Related rules</span> <span class="dim">&mdash; Active: status = 'A'</span><br>
+              <span class="hl-green">Value lookups</span> <span class="dim">&mdash; asset_class_code: EQ, FI, FX&hellip;</span>
+            </div>
+          </div>
+          <div class="detail-box">
+            <div class="detail-label">From vector DB (examples collection)</div>
+            <div class="detail-value">
+              <span class="hl-purple">Few-shot example 1:</span><br>
+              <span class="dim">Q: "Show all trades executed today"</span><br>
+              <span class="dim">A: SELECT &hellip; FROM trade_ledger WHERE &hellip;</span><br><br>
+              <span class="hl-purple">Few-shot example 2:</span><br>
+              <span class="dim">Q: "Total buy volume by instrument"</span><br>
+              <span class="dim">A: SELECT &hellip; GROUP BY instrument_id</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="arrow-label">assembled prompt sent to LLM</div>
+
+    <!-- Step 4 -->
+    <div class="step">
+      <div class="step-dot purple"></div>
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-num purple">STEP 4</span>
+          <span class="step-title">LLM Query Generation</span>
+        </div>
+        <div class="step-desc">
+          The LLM (Mistral 7B locally via Ollama, or Claude Sonnet on AWS Bedrock for production)
+          receives the assembled prompt and generates a Snowflake SQL or GraphQL query. It applies
+          business rules, uses correct physical column names from the provided schemas, and follows
+          patterns from the few-shot examples.
+        </div>
+        <div class="detail-grid">
+          <div class="detail-box full">
+            <div class="detail-label">Generated SQL</div>
+            <div class="detail-value">
+              <span class="hl-purple">SELECT</span> t.trade_id, im.instrument_name, t.quantity, t.price<br>
+              <span class="hl-purple">FROM</span> trade_ledger t<br>
+              <span class="hl-purple">JOIN</span> instrument_master im <span class="hl-purple">ON</span> t.instrument_id = im.instrument_id<br>
+              <span class="hl-purple">WHERE</span> im.asset_class_code = <span class="hl-green">'EQ'</span><br>
+              &nbsp;&nbsp;<span class="hl-purple">AND</span> im.exchange_code = <span class="hl-green">'NYSE'</span><br>
+              &nbsp;&nbsp;<span class="hl-purple">AND</span> t.trade_date = <span class="hl-blue">CURRENT_DATE()</span><br>
+              &nbsp;&nbsp;<span class="hl-purple">AND</span> t.status_code <span class="hl-purple">NOT IN</span> (<span class="hl-red">'CXL'</span>, <span class="hl-red">'REJ'</span>)<br>
+              <span class="hl-purple">ORDER BY</span> t.booking_date <span class="hl-purple">DESC</span>;
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="arrow-label">generated query passed to validator</div>
+
+    <!-- Step 5 -->
+    <div class="step">
+      <div class="step-dot cyan"></div>
+      <div class="step-card">
+        <div class="step-header">
+          <span class="step-num cyan">STEP 5</span>
+          <span class="step-title">Validation &amp; Self-Correction</span>
+        </div>
+        <div class="step-desc">
+          The generated query is parsed by sqlglot (Snowflake dialect). Every column reference is
+          checked against the schemas of all included products &mdash; both the explicit attributes
+          list and columns extracted directly from DDL. Dangerous operations (DROP, DELETE, etc.)
+          are blocked. If validation fails, the error is fed back to the LLM for up to 2 retries.
+        </div>
+        <div class="detail-grid">
+          <div class="detail-box">
+            <div class="detail-label">Checks performed</div>
+            <div class="detail-value">
+              <span class="hl-green">1.</span> SQL syntax parse <span class="dim">(sqlglot / Snowflake)</span><br>
+              <span class="hl-green">2.</span> Column existence vs attribute list<br>
+              <span class="hl-green">3.</span> DDL-aware column extraction fallback<br>
+              <span class="hl-green">4.</span> Cross-product column validation<br>
+              <span class="hl-red">5.</span> Guardrails <span class="dim">(block DROP, DELETE, INSERT, UPDATE)</span>
+            </div>
+          </div>
+          <div class="detail-box">
+            <div class="detail-label">Self-correction loop</div>
+            <div class="detail-value">
+              <span class="dim">attempt 1 &rarr;</span> <span class="hl-red">Column 'name' not found</span><br>
+              <span class="dim">error fed back &rarr;</span> LLM retries with feedback<br>
+              <span class="dim">attempt 2 &rarr;</span> <span class="hl-green">Valid query returned</span><br>
+              <span class="dim">max retries: 2</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Data sources -->
+  <div class="data-sources">
+    <h3>Where does the context come from?</h3>
+    <div class="source-grid">
+      <div class="source-item">
+        <div class="slabel">Collection 1</div>
+        <div class="name">Products</div>
+        <div class="desc">Product-level embeddings for routing. One document per data product with name, description, and key attributes.</div>
+        <span class="tag vector">ChromaDB</span>
+      </div>
+      <div class="source-item">
+        <div class="slabel">Collection 2</div>
+        <div class="name">Attributes</div>
+        <div class="desc">Attribute-level embeddings for fine-grained schema retrieval. Used for products with many columns.</div>
+        <span class="tag vector">ChromaDB</span>
+      </div>
+      <div class="source-item">
+        <div class="slabel">Collection 3</div>
+        <div class="name">Query Examples</div>
+        <div class="desc">Natural-language questions embedded for few-shot retrieval. SQL/GraphQL stored in metadata.</div>
+        <span class="tag vector">ChromaDB</span>
+      </div>
+      <div class="source-item">
+        <div class="slabel">In-Memory</div>
+        <div class="name">Schema DDL / SDL</div>
+        <div class="desc">Full CREATE TABLE or GraphQL SDL per product. Injected directly into the LLM prompt at generation time.</div>
+        <span class="tag memory">Catalog</span>
+      </div>
+      <div class="source-item">
+        <div class="slabel">In-Memory</div>
+        <div class="name">Business Rules</div>
+        <div class="desc">Structured rules with SQL predicates and descriptions. Applied automatically during query generation.</div>
+        <span class="tag memory">Catalog</span>
+      </div>
+      <div class="source-item">
+        <div class="slabel">Model</div>
+        <div class="name">LLM Provider</div>
+        <div class="desc">Mistral 7B (Ollama) for local prototype. Claude Sonnet (Bedrock) for production. Pluggable via config.</div>
+        <span class="tag llm">LLM</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) e.target.classList.add('visible');
+      });
+    },
+    { threshold: 0.15 }
+  );
+  document.querySelectorAll('.step').forEach((el) => observer.observe(el));
+
+  async function loadStats() {
+    try {
+      const products = await fetch('/api/products').then((r) => r.json());
+      document.getElementById('stat-products').textContent = products.length;
+
+      let totalAttrs = 0;
+      products.forEach((p) => { totalAttrs += p.attribute_count; });
+      document.getElementById('stat-attrs').textContent = totalAttrs;
+
+      let totalExamples = 0;
+      let totalRels = 0;
+      for (const p of products) {
+        const detail = await fetch('/api/products/' + p.product_id).then((r) => r.json());
+        totalExamples += (detail.business_rules || []).length;
+        totalRels += (detail.relationships || []).length;
+      }
+
+      const exEl = document.getElementById('stat-examples');
+      exEl.textContent = totalExamples;
+      exEl.closest('.stat-card').querySelector('.label').textContent = 'Business Rules';
+
+      document.getElementById('stat-rels').textContent = totalRels;
+    } catch (_) {
+      /* stats stay as dashes if API is unavailable */
+    }
+  }
+  loadStats();
+})();
+</script>
+</body>
+</html>
