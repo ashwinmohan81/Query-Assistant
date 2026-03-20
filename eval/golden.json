@@ -1,0 +1,249 @@
+{
+  "test_cases": [
+    {
+      "question": "Show me all active bonds maturing in 2025",
+      "expected_product": "instrument_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["instrument_id", "instrument_name", "maturity_date"],
+      "must_contain_predicates": ["status_code = 'A'", "maturity_date"]
+    },
+    {
+      "question": "What are the high yield bonds?",
+      "expected_product": "instrument_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["instrument_id", "rating_sp"],
+      "must_contain_predicates": ["rating_sp"]
+    },
+    {
+      "question": "List all equities traded on NYSE",
+      "expected_product": "instrument_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["instrument_id"],
+      "must_contain_predicates": ["exchange_code"]
+    },
+    {
+      "question": "Find the ISIN for Treasury bonds",
+      "expected_product": "instrument_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["isin_code"],
+      "must_contain_predicates": []
+    },
+    {
+      "question": "How many active instruments do we have by asset class?",
+      "expected_product": "instrument_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["asset_class_code"],
+      "must_contain_predicates": ["status_code"]
+    },
+    {
+      "question": "What is the latest closing price for instrument ABC123?",
+      "expected_product": "market_data",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["close_price", "price_date"],
+      "must_contain_predicates": ["instrument_id"]
+    },
+    {
+      "question": "Show me price history for the last 30 days",
+      "expected_product": "market_data",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["price_date", "close_price"],
+      "must_contain_predicates": ["price_date"]
+    },
+    {
+      "question": "Which instruments had the highest trading volume yesterday?",
+      "expected_product": "market_data",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["volume", "instrument_id"],
+      "must_contain_predicates": ["price_date"]
+    },
+    {
+      "question": "What is the yield to maturity for bond XYZ?",
+      "expected_product": "market_data",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["yield_to_maturity"],
+      "must_contain_predicates": []
+    },
+    {
+      "question": "Show me bid ask spread for an instrument over the past week",
+      "expected_product": "market_data",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["bid_price", "ask_price"],
+      "must_contain_predicates": ["price_date"]
+    },
+    {
+      "question": "List all active counterparties in APAC",
+      "expected_product": "party_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["party_id", "legal_name"],
+      "must_contain_predicates": ["status_code", "region_code"]
+    },
+    {
+      "question": "Find the LEI code for Goldman Sachs",
+      "expected_product": "party_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["lei_code"],
+      "must_contain_predicates": []
+    },
+    {
+      "question": "Which counterparties have overdue KYC reviews?",
+      "expected_product": "party_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["last_kyc_date"],
+      "must_contain_predicates": ["last_kyc_date"]
+    },
+    {
+      "question": "Show me the corporate hierarchy for party P001",
+      "expected_product": "party_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["parent_party_id"],
+      "must_contain_predicates": ["party_id"]
+    },
+    {
+      "question": "How many counterparties do we have by region?",
+      "expected_product": "party_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["region_code"],
+      "must_contain_predicates": []
+    },
+    {
+      "question": "List all banks in North America",
+      "expected_product": "party_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["party_type_code"],
+      "must_contain_predicates": ["region_code"]
+    },
+    {
+      "question": "Show me all active trading accounts for the equity desk",
+      "expected_product": "account_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["account_id", "account_name"],
+      "must_contain_predicates": ["status_code", "desk_code"]
+    },
+    {
+      "question": "Which accounts are held at custodian JPMorgan?",
+      "expected_product": "account_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["account_id"],
+      "must_contain_predicates": ["custodian_party_id"]
+    },
+    {
+      "question": "List all client accounts opened this year",
+      "expected_product": "account_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["account_id", "open_date"],
+      "must_contain_predicates": ["open_date"]
+    },
+    {
+      "question": "How many accounts does each desk have?",
+      "expected_product": "account_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["desk_code"],
+      "must_contain_predicates": []
+    },
+    {
+      "question": "Show all margin accounts",
+      "expected_product": "account_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["account_id", "account_type_code"],
+      "must_contain_predicates": ["account_type_code"]
+    },
+    {
+      "question": "Show me all trades executed today",
+      "expected_product": "trade_ledger",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["trade_id", "trade_date"],
+      "must_contain_predicates": ["trade_date"]
+    },
+    {
+      "question": "What are the unsettled trades for account A001?",
+      "expected_product": "trade_ledger",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["trade_id", "settlement_date"],
+      "must_contain_predicates": ["account_id", "status_code"]
+    },
+    {
+      "question": "Total buy volume by instrument this month",
+      "expected_product": "trade_ledger",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["instrument_id", "quantity"],
+      "must_contain_predicates": ["buy_sell_indicator"]
+    },
+    {
+      "question": "Show me failed trades in the last week",
+      "expected_product": "trade_ledger",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["trade_id", "status_code"],
+      "must_contain_predicates": ["status_code"]
+    },
+    {
+      "question": "How much commission did we pay to brokers this quarter?",
+      "expected_product": "trade_ledger",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["commission", "broker_id"],
+      "must_contain_predicates": ["trade_date"]
+    },
+    {
+      "question": "What are the largest sell trades today?",
+      "expected_product": "trade_ledger",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["trade_id", "gross_amount"],
+      "must_contain_predicates": ["buy_sell_indicator"]
+    },
+    {
+      "question": "What are my current positions in account A001?",
+      "expected_product": "position_book",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["instrument_id", "quantity", "market_value"],
+      "must_contain_predicates": ["account_id", "position_date"]
+    },
+    {
+      "question": "Show me the top 10 positions by market value",
+      "expected_product": "position_book",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["market_value", "instrument_id"],
+      "must_contain_predicates": ["position_date"]
+    },
+    {
+      "question": "What is the total P&L across all positions?",
+      "expected_product": "position_book",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["total_pnl"],
+      "must_contain_predicates": ["position_date"]
+    },
+    {
+      "question": "Show me all short positions",
+      "expected_product": "position_book",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["long_short_indicator", "quantity"],
+      "must_contain_predicates": ["long_short_indicator"]
+    },
+    {
+      "question": "Which positions have unrealized losses greater than 1 million?",
+      "expected_product": "position_book",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["unrealized_pnl"],
+      "must_contain_predicates": ["unrealized_pnl"]
+    },
+    {
+      "question": "Show me all FX derivatives in our portfolio",
+      "expected_product": "instrument_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["instrument_id", "asset_class_code"],
+      "must_contain_predicates": ["asset_class_code"]
+    },
+    {
+      "question": "What is the notional exposure by currency?",
+      "expected_product": "position_book",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["currency_code", "market_value"],
+      "must_contain_predicates": []
+    },
+    {
+      "question": "List all suspended instruments",
+      "expected_product": "instrument_master",
+      "expected_query_type": "sql",
+      "must_contain_columns": ["instrument_id", "status_code"],
+      "must_contain_predicates": ["status_code"]
+    }
+  ]
+}

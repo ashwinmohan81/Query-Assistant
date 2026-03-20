@@ -1,0 +1,2555 @@
+{
+  "products": [
+    {
+      "product_id": "instrument_master",
+      "name": "Instrument Master",
+      "domain": "Capital Markets",
+      "subdomain": "Securities",
+      "description": "System of record for all tradable financial instruments including equities, fixed income, derivatives, and foreign exchange products. Contains reference data such as identifiers, classifications, lifecycle dates, and issuer information.",
+      "distribution_type": "both",
+      "schema_sql": "CREATE TABLE instrument_master (\n  instrument_id VARCHAR(20) PRIMARY KEY,\n  isin_code VARCHAR(12),\n  cusip_code VARCHAR(9),\n  sedol_code VARCHAR(7),\n  instrument_name VARCHAR(200),\n  instrument_type_code VARCHAR(10),\n  asset_class_code VARCHAR(10),\n  issue_date DATE,\n  maturity_date DATE,\n  expiry_date DATE,\n  issuer_party_id VARCHAR(20),\n  currency_code VARCHAR(3),\n  country_of_issue VARCHAR(3),\n  exchange_code VARCHAR(10),\n  notional_amount DECIMAL(18,2),\n  coupon_rate DECIMAL(8,4),\n  coupon_frequency VARCHAR(10),\n  rating_sp VARCHAR(10),\n  rating_moodys VARCHAR(10),\n  status_code VARCHAR(5),\n  created_date TIMESTAMP,\n  last_updated_date TIMESTAMP\n);",
+      "schema_graphql": "type Instrument {\n  instrumentId: ID!\n  isinCode: String\n  cusipCode: String\n  sedolCode: String\n  instrumentName: String!\n  instrumentTypeCode: String!\n  assetClassCode: String!\n  issueDate: Date\n  maturityDate: Date\n  expiryDate: Date\n  issuerPartyId: String\n  currencyCode: String!\n  countryOfIssue: String\n  exchangeCode: String\n  notionalAmount: Float\n  couponRate: Float\n  couponFrequency: String\n  ratingSp: String\n  ratingMoodys: String\n  statusCode: String!\n  createdDate: DateTime\n  lastUpdatedDate: DateTime\n}\n\ntype Query {\n  instrument(instrumentId: ID!): Instrument\n  instruments(filter: InstrumentFilter, limit: Int, offset: Int): [Instrument!]!\n}\n\ninput InstrumentFilter {\n  instrumentTypeCode: String\n  assetClassCode: String\n  currencyCode: String\n  statusCode: String\n  issuerPartyId: String\n  exchangeCode: String\n}",
+      "attributes": [
+        {
+          "logical_name": "Instrument ID",
+          "physical_name": "instrument_id",
+          "graphql_name": "instrumentId",
+          "data_type": "VARCHAR(20)",
+          "description": "Unique identifier for the financial instrument",
+          "synonyms": ["security id", "instrument identifier", "inst id"],
+          "is_primary_key": true
+        },
+        {
+          "logical_name": "ISIN Code",
+          "physical_name": "isin_code",
+          "graphql_name": "isinCode",
+          "data_type": "VARCHAR(12)",
+          "description": "International Securities Identification Number - a 12-character alphanumeric code that uniquely identifies a security",
+          "synonyms": ["ISIN", "international security id", "isin number"]
+        },
+        {
+          "logical_name": "CUSIP Code",
+          "physical_name": "cusip_code",
+          "graphql_name": "cusipCode",
+          "data_type": "VARCHAR(9)",
+          "description": "Committee on Uniform Securities Identification Procedures number - 9-character identifier for North American securities",
+          "synonyms": ["CUSIP", "cusip number", "cusip identifier"]
+        },
+        {
+          "logical_name": "SEDOL Code",
+          "physical_name": "sedol_code",
+          "graphql_name": "sedolCode",
+          "data_type": "VARCHAR(7)",
+          "description": "Stock Exchange Daily Official List code - 7-character identifier used in the UK and Ireland",
+          "synonyms": ["SEDOL", "sedol number"]
+        },
+        {
+          "logical_name": "Instrument Name",
+          "physical_name": "instrument_name",
+          "graphql_name": "instrumentName",
+          "data_type": "VARCHAR(200)",
+          "description": "Full legal name of the financial instrument",
+          "synonyms": ["security name", "instrument description", "name"]
+        },
+        {
+          "logical_name": "Instrument Type",
+          "physical_name": "instrument_type_code",
+          "graphql_name": "instrumentTypeCode",
+          "data_type": "VARCHAR(10)",
+          "description": "Classification code indicating the type of instrument",
+          "synonyms": ["security type", "inst type", "type", "product type"],
+          "value_dictionary": {
+            "BOND": "Fixed income bond",
+            "EQUITY": "Common or preferred equity share",
+            "OPTION": "Listed or OTC option contract",
+            "FUTURE": "Exchange-traded futures contract",
+            "SWAP": "Interest rate or credit default swap",
+            "FX_SPOT": "Foreign exchange spot transaction",
+            "FX_FWD": "Foreign exchange forward contract",
+            "ETF": "Exchange-traded fund",
+            "FUND": "Mutual fund or collective investment",
+            "WARRANT": "Warrant instrument"
+          }
+        },
+        {
+          "logical_name": "Asset Class",
+          "physical_name": "asset_class_code",
+          "graphql_name": "assetClassCode",
+          "data_type": "VARCHAR(10)",
+          "description": "Broad classification of the instrument's asset class",
+          "synonyms": ["asset type", "asset category"],
+          "value_dictionary": {
+            "EQ": "Equity",
+            "FI": "Fixed Income",
+            "FX": "Foreign Exchange",
+            "CMDTY": "Commodity",
+            "DERIV": "Derivatives",
+            "MM": "Money Market"
+          }
+        },
+        {
+          "logical_name": "Issue Date",
+          "physical_name": "issue_date",
+          "graphql_name": "issueDate",
+          "data_type": "DATE",
+          "description": "Date when the instrument was originally issued",
+          "synonyms": ["issuance date", "date of issue", "origination date"]
+        },
+        {
+          "logical_name": "Maturity Date",
+          "physical_name": "maturity_date",
+          "graphql_name": "maturityDate",
+          "data_type": "DATE",
+          "description": "Date when the instrument matures or expires",
+          "synonyms": ["maturity", "expiration date", "redemption date"]
+        },
+        {
+          "logical_name": "Expiry Date",
+          "physical_name": "expiry_date",
+          "graphql_name": "expiryDate",
+          "data_type": "DATE",
+          "description": "Date when the instrument record expires in the system",
+          "synonyms": ["expiration", "record expiry"]
+        },
+        {
+          "logical_name": "Issuer Party ID",
+          "physical_name": "issuer_party_id",
+          "graphql_name": "issuerPartyId",
+          "data_type": "VARCHAR(20)",
+          "description": "Identifier of the party that issued the instrument, references party_master.party_id",
+          "synonyms": ["issuer", "issuer id", "issuing party"],
+          "foreign_key": "party_master.party_id"
+        },
+        {
+          "logical_name": "Currency",
+          "physical_name": "currency_code",
+          "graphql_name": "currencyCode",
+          "data_type": "VARCHAR(3)",
+          "description": "ISO 4217 currency code for the instrument's denomination",
+          "synonyms": ["ccy", "denomination currency", "currency"]
+        },
+        {
+          "logical_name": "Country of Issue",
+          "physical_name": "country_of_issue",
+          "graphql_name": "countryOfIssue",
+          "data_type": "VARCHAR(3)",
+          "description": "ISO 3166 country code where the instrument was issued",
+          "synonyms": ["country", "issuing country", "domicile"]
+        },
+        {
+          "logical_name": "Exchange",
+          "physical_name": "exchange_code",
+          "graphql_name": "exchangeCode",
+          "data_type": "VARCHAR(10)",
+          "description": "Code of the primary exchange where the instrument is listed",
+          "synonyms": ["listing exchange", "market", "exchange"],
+          "value_dictionary": {
+            "NYSE": "New York Stock Exchange",
+            "NASDAQ": "NASDAQ Stock Market",
+            "LSE": "London Stock Exchange",
+            "TSE": "Tokyo Stock Exchange",
+            "HKEX": "Hong Kong Exchange",
+            "SGX": "Singapore Exchange",
+            "OTC": "Over-the-Counter"
+          }
+        },
+        {
+          "logical_name": "Notional Amount",
+          "physical_name": "notional_amount",
+          "graphql_name": "notionalAmount",
+          "data_type": "DECIMAL(18,2)",
+          "description": "Face value or notional principal amount of the instrument",
+          "synonyms": ["face value", "par value", "notional", "principal"]
+        },
+        {
+          "logical_name": "Coupon Rate",
+          "physical_name": "coupon_rate",
+          "graphql_name": "couponRate",
+          "data_type": "DECIMAL(8,4)",
+          "description": "Annual coupon rate for fixed income instruments, expressed as a decimal (e.g., 0.0525 = 5.25%)",
+          "synonyms": ["coupon", "interest rate", "yield rate"]
+        },
+        {
+          "logical_name": "Coupon Frequency",
+          "physical_name": "coupon_frequency",
+          "graphql_name": "couponFrequency",
+          "data_type": "VARCHAR(10)",
+          "description": "How often coupon payments are made",
+          "synonyms": ["payment frequency"],
+          "value_dictionary": {
+            "ANNUAL": "Once per year",
+            "SEMI": "Twice per year",
+            "QUARTERLY": "Four times per year",
+            "MONTHLY": "Twelve times per year",
+            "ZERO": "Zero coupon (no periodic payments)"
+          }
+        },
+        {
+          "logical_name": "S&P Rating",
+          "physical_name": "rating_sp",
+          "graphql_name": "ratingSp",
+          "data_type": "VARCHAR(10)",
+          "description": "Standard & Poor's credit rating for the instrument",
+          "synonyms": ["S&P rating", "SP rating", "credit rating"]
+        },
+        {
+          "logical_name": "Moody's Rating",
+          "physical_name": "rating_moodys",
+          "graphql_name": "ratingMoodys",
+          "data_type": "VARCHAR(10)",
+          "description": "Moody's credit rating for the instrument",
+          "synonyms": ["Moody's rating", "moodys rating"]
+        },
+        {
+          "logical_name": "Status",
+          "physical_name": "status_code",
+          "graphql_name": "statusCode",
+          "data_type": "VARCHAR(5)",
+          "description": "Current lifecycle status of the instrument",
+          "synonyms": ["instrument status", "status", "state"],
+          "value_dictionary": {
+            "A": "Active - instrument is live and tradable",
+            "I": "Inactive - instrument is no longer tradable",
+            "M": "Matured - instrument has reached maturity date",
+            "D": "Defaulted - issuer has defaulted",
+            "S": "Suspended - temporarily suspended from trading"
+          }
+        }
+      ],
+      "business_rules": [
+        {
+          "rule_name": "Active Instrument",
+          "description": "An instrument is considered active when its status is Active and it has not passed its expiry date",
+          "sql_predicate": "status_code = 'A' AND (expiry_date IS NULL OR expiry_date > CURRENT_DATE())",
+          "graphql_filter": "statusCode: \"A\""
+        },
+        {
+          "rule_name": "Matured Bond",
+          "description": "A bond that has reached its maturity date",
+          "sql_predicate": "instrument_type_code = 'BOND' AND maturity_date <= CURRENT_DATE()",
+          "graphql_filter": "instrumentTypeCode: \"BOND\""
+        },
+        {
+          "rule_name": "High Yield Bond",
+          "description": "A bond rated below investment grade (BB+ or lower by S&P, Ba1 or lower by Moody's)",
+          "sql_predicate": "instrument_type_code = 'BOND' AND rating_sp IN ('BB+','BB','BB-','B+','B','B-','CCC+','CCC','CCC-','CC','C','D')",
+          "graphql_filter": "instrumentTypeCode: \"BOND\""
+        },
+        {
+          "rule_name": "Investment Grade Bond",
+          "description": "A bond rated BBB- or higher by S&P (Baa3 or higher by Moody's)",
+          "sql_predicate": "instrument_type_code = 'BOND' AND rating_sp IN ('AAA','AA+','AA','AA-','A+','A','A-','BBB+','BBB','BBB-')",
+          "graphql_filter": "instrumentTypeCode: \"BOND\""
+        },
+        {
+          "rule_name": "Equity Instruments",
+          "description": "All equity-class instruments including common stocks, preferred shares, and ETFs",
+          "sql_predicate": "asset_class_code = 'EQ'",
+          "graphql_filter": "assetClassCode: \"EQ\""
+        }
+      ],
+      "query_examples": [
+        {
+          "question": "Show me all active bonds maturing in 2025",
+          "query_type": "sql",
+          "query": "SELECT instrument_id, instrument_name, isin_code, maturity_date, coupon_rate, currency_code\nFROM instrument_master\nWHERE status_code = 'A'\n  AND (expiry_date IS NULL OR expiry_date > CURRENT_DATE())\n  AND instrument_type_code = 'BOND'\n  AND maturity_date BETWEEN '2025-01-01' AND '2025-12-31'\nORDER BY maturity_date;"
+        },
+        {
+          "question": "What are the high yield bonds issued by a specific party?",
+          "query_type": "sql",
+          "query": "SELECT i.instrument_id, i.instrument_name, i.isin_code, i.rating_sp, i.coupon_rate, i.maturity_date\nFROM instrument_master i\nWHERE i.status_code = 'A'\n  AND i.instrument_type_code = 'BOND'\n  AND i.rating_sp IN ('BB+','BB','BB-','B+','B','B-','CCC+','CCC','CCC-','CC','C','D')\n  AND i.issuer_party_id = :party_id\nORDER BY i.rating_sp, i.maturity_date;"
+        },
+        {
+          "question": "List all equities traded on NYSE",
+          "query_type": "sql",
+          "query": "SELECT instrument_id, instrument_name, isin_code, currency_code\nFROM instrument_master\nWHERE status_code = 'A'\n  AND (expiry_date IS NULL OR expiry_date > CURRENT_DATE())\n  AND asset_class_code = 'EQ'\n  AND exchange_code = 'NYSE'\nORDER BY instrument_name;"
+        },
+        {
+          "question": "Find the ISIN for a bond called Treasury 5.25 2030",
+          "query_type": "sql",
+          "query": "SELECT instrument_id, isin_code, cusip_code, instrument_name, maturity_date, coupon_rate\nFROM instrument_master\nWHERE instrument_name ILIKE '%Treasury%5.25%2030%'\n  AND instrument_type_code = 'BOND';"
+        },
+        {
+          "question": "Get instrument details by ISIN",
+          "query_type": "graphql",
+          "query": "query GetInstrumentByISIN {\n  instruments(filter: { isinCode: \"US0378331005\" }) {\n    instrumentId\n    instrumentName\n    instrumentTypeCode\n    assetClassCode\n    currencyCode\n    statusCode\n    issueDate\n    maturityDate\n  }\n}"
+        }
+      ]
+    },
+    {
+      "product_id": "market_data",
+      "name": "Market Data",
+      "domain": "Capital Markets",
+      "subdomain": "Pricing",
+      "description": "End-of-day and intraday market data including prices, yields, spreads, and trading volumes for all asset classes. Sourced from exchanges, data vendors (Bloomberg, Reuters), and internal marks.",
+      "distribution_type": "datamesh",
+      "schema_sql": "CREATE TABLE market_data (\n  instrument_id VARCHAR(20),\n  price_date DATE,\n  bid_price DECIMAL(18,6),\n  ask_price DECIMAL(18,6),\n  mid_price DECIMAL(18,6),\n  close_price DECIMAL(18,6),\n  open_price DECIMAL(18,6),\n  high_price DECIMAL(18,6),\n  low_price DECIMAL(18,6),\n  volume BIGINT,\n  vwap DECIMAL(18,6),\n  yield_to_maturity DECIMAL(8,4),\n  spread_bps DECIMAL(8,2),\n  price_currency VARCHAR(3),\n  price_source VARCHAR(20),\n  as_of_timestamp TIMESTAMP,\n  PRIMARY KEY (instrument_id, price_date, price_source)\n);",
+      "schema_graphql": null,
+      "attributes": [
+        {
+          "logical_name": "Instrument ID",
+          "physical_name": "instrument_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Identifier of the instrument this price data belongs to, references instrument_master.instrument_id",
+          "synonyms": ["security id", "instrument"],
+          "foreign_key": "instrument_master.instrument_id"
+        },
+        {
+          "logical_name": "Price Date",
+          "physical_name": "price_date",
+          "data_type": "DATE",
+          "description": "Business date for this price record",
+          "synonyms": ["date", "valuation date", "as of date", "business date"]
+        },
+        {
+          "logical_name": "Bid Price",
+          "physical_name": "bid_price",
+          "data_type": "DECIMAL(18,6)",
+          "description": "Best bid price at close",
+          "synonyms": ["bid", "buy price"]
+        },
+        {
+          "logical_name": "Ask Price",
+          "physical_name": "ask_price",
+          "data_type": "DECIMAL(18,6)",
+          "description": "Best ask/offer price at close",
+          "synonyms": ["ask", "offer price", "sell price"]
+        },
+        {
+          "logical_name": "Mid Price",
+          "physical_name": "mid_price",
+          "data_type": "DECIMAL(18,6)",
+          "description": "Midpoint between bid and ask price",
+          "synonyms": ["mid", "mid-market price"]
+        },
+        {
+          "logical_name": "Close Price",
+          "physical_name": "close_price",
+          "data_type": "DECIMAL(18,6)",
+          "description": "Official closing price for the business day",
+          "synonyms": ["closing price", "close", "settlement price", "price"]
+        },
+        {
+          "logical_name": "Open Price",
+          "physical_name": "open_price",
+          "data_type": "DECIMAL(18,6)",
+          "description": "Opening price for the business day",
+          "synonyms": ["opening price", "open"]
+        },
+        {
+          "logical_name": "High Price",
+          "physical_name": "high_price",
+          "data_type": "DECIMAL(18,6)",
+          "description": "Highest traded price during the business day",
+          "synonyms": ["high", "day high", "intraday high"]
+        },
+        {
+          "logical_name": "Low Price",
+          "physical_name": "low_price",
+          "data_type": "DECIMAL(18,6)",
+          "description": "Lowest traded price during the business day",
+          "synonyms": ["low", "day low", "intraday low"]
+        },
+        {
+          "logical_name": "Volume",
+          "physical_name": "volume",
+          "data_type": "BIGINT",
+          "description": "Total number of shares or contracts traded during the business day",
+          "synonyms": ["trading volume", "daily volume", "shares traded"]
+        },
+        {
+          "logical_name": "VWAP",
+          "physical_name": "vwap",
+          "data_type": "DECIMAL(18,6)",
+          "description": "Volume-weighted average price for the business day",
+          "synonyms": ["volume weighted average price"]
+        },
+        {
+          "logical_name": "Yield to Maturity",
+          "physical_name": "yield_to_maturity",
+          "data_type": "DECIMAL(8,4)",
+          "description": "Yield to maturity for fixed income instruments",
+          "synonyms": ["YTM", "yield", "bond yield"]
+        },
+        {
+          "logical_name": "Spread",
+          "physical_name": "spread_bps",
+          "data_type": "DECIMAL(8,2)",
+          "description": "Credit spread over benchmark in basis points",
+          "synonyms": ["credit spread", "spread", "OAS", "z-spread"]
+        },
+        {
+          "logical_name": "Price Currency",
+          "physical_name": "price_currency",
+          "data_type": "VARCHAR(3)",
+          "description": "Currency in which the price is quoted",
+          "synonyms": ["currency", "quotation currency"]
+        },
+        {
+          "logical_name": "Price Source",
+          "physical_name": "price_source",
+          "data_type": "VARCHAR(20)",
+          "description": "Source of the price data",
+          "synonyms": ["source", "data vendor", "provider"],
+          "value_dictionary": {
+            "BLOOMBERG": "Bloomberg Terminal",
+            "REUTERS": "Reuters/Refinitiv",
+            "EXCHANGE": "Direct exchange feed",
+            "INTERNAL": "Internal marks/valuation",
+            "MARKIT": "IHS Markit"
+          }
+        }
+      ],
+      "business_rules": [
+        {
+          "rule_name": "Latest Price",
+          "description": "The most recent available price for an instrument — use MAX(price_date) or order by price_date DESC LIMIT 1",
+          "sql_predicate": "price_date = (SELECT MAX(price_date) FROM market_data md2 WHERE md2.instrument_id = market_data.instrument_id)"
+        },
+        {
+          "rule_name": "Closing Price",
+          "description": "When users ask for 'the price', they typically mean the close_price field",
+          "sql_predicate": "close_price IS NOT NULL"
+        },
+        {
+          "rule_name": "Primary Source",
+          "description": "When multiple sources exist, prefer BLOOMBERG, then REUTERS, then EXCHANGE",
+          "sql_predicate": "price_source = 'BLOOMBERG'"
+        },
+        {
+          "rule_name": "Price as of Date",
+          "description": "When a user asks for price 'as of' a date, use price_date = that date. If not available, use the most recent prior date.",
+          "sql_predicate": "price_date <= :as_of_date ORDER BY price_date DESC LIMIT 1"
+        }
+      ],
+      "query_examples": [
+        {
+          "question": "What is the latest closing price for instrument X?",
+          "query_type": "sql",
+          "query": "SELECT instrument_id, price_date, close_price, price_currency, price_source\nFROM market_data\nWHERE instrument_id = :instrument_id\n  AND close_price IS NOT NULL\nORDER BY price_date DESC\nLIMIT 1;"
+        },
+        {
+          "question": "Show me the price history for the last 30 days",
+          "query_type": "sql",
+          "query": "SELECT instrument_id, price_date, open_price, high_price, low_price, close_price, volume\nFROM market_data\nWHERE instrument_id = :instrument_id\n  AND price_date >= DATEADD(day, -30, CURRENT_DATE())\n  AND price_source = 'BLOOMBERG'\nORDER BY price_date;"
+        },
+        {
+          "question": "Which instruments had the highest trading volume yesterday?",
+          "query_type": "sql",
+          "query": "SELECT m.instrument_id, m.close_price, m.volume, m.price_currency\nFROM market_data m\nWHERE m.price_date = DATEADD(day, -1, CURRENT_DATE())\n  AND m.price_source = 'BLOOMBERG'\nORDER BY m.volume DESC\nLIMIT 20;"
+        },
+        {
+          "question": "What is the yield to maturity for bond ABC?",
+          "query_type": "sql",
+          "query": "SELECT instrument_id, price_date, yield_to_maturity, spread_bps, close_price\nFROM market_data\nWHERE instrument_id = :instrument_id\n  AND yield_to_maturity IS NOT NULL\nORDER BY price_date DESC\nLIMIT 1;"
+        },
+        {
+          "question": "Show me the bid-ask spread for instrument X over the past week",
+          "query_type": "sql",
+          "query": "SELECT instrument_id, price_date, bid_price, ask_price, (ask_price - bid_price) AS bid_ask_spread\nFROM market_data\nWHERE instrument_id = :instrument_id\n  AND price_date >= DATEADD(day, -7, CURRENT_DATE())\n  AND price_source = 'BLOOMBERG'\nORDER BY price_date;"
+        }
+      ]
+    },
+    {
+      "product_id": "party_master",
+      "name": "Party Master",
+      "domain": "Reference Data",
+      "subdomain": "Counterparties",
+      "description": "System of record for all legal entities, counterparties, issuers, custodians, and internal business units. Contains party identification, classification, geographic information, and regulatory identifiers like LEI codes.",
+      "distribution_type": "both",
+      "schema_sql": "CREATE TABLE party_master (\n  party_id VARCHAR(20) PRIMARY KEY,\n  legal_name VARCHAR(300),\n  short_name VARCHAR(100),\n  party_type_code VARCHAR(10),\n  party_role_code VARCHAR(10),\n  lei_code VARCHAR(20),\n  tax_id VARCHAR(30),\n  country_code VARCHAR(3),\n  region_code VARCHAR(10),\n  city VARCHAR(100),\n  industry_code VARCHAR(10),\n  parent_party_id VARCHAR(20),\n  ultimate_parent_id VARCHAR(20),\n  status_code VARCHAR(5),\n  onboarding_date DATE,\n  last_kyc_date DATE,\n  created_date TIMESTAMP,\n  last_updated_date TIMESTAMP\n);",
+      "schema_graphql": "type Party {\n  partyId: ID!\n  legalName: String!\n  shortName: String\n  partyTypeCode: String!\n  partyRoleCode: String\n  leiCode: String\n  taxId: String\n  countryCode: String\n  regionCode: String\n  city: String\n  industryCode: String\n  parentPartyId: String\n  ultimateParentId: String\n  statusCode: String!\n  onboardingDate: Date\n  lastKycDate: Date\n}\n\ntype Query {\n  party(partyId: ID!): Party\n  parties(filter: PartyFilter, limit: Int, offset: Int): [Party!]!\n}\n\ninput PartyFilter {\n  partyTypeCode: String\n  partyRoleCode: String\n  countryCode: String\n  regionCode: String\n  statusCode: String\n}",
+      "attributes": [
+        {
+          "logical_name": "Party ID",
+          "physical_name": "party_id",
+          "graphql_name": "partyId",
+          "data_type": "VARCHAR(20)",
+          "description": "Unique identifier for the party/legal entity",
+          "synonyms": ["counterparty id", "entity id", "party identifier"],
+          "is_primary_key": true
+        },
+        {
+          "logical_name": "Legal Name",
+          "physical_name": "legal_name",
+          "graphql_name": "legalName",
+          "data_type": "VARCHAR(300)",
+          "description": "Full legal name of the entity",
+          "synonyms": ["name", "entity name", "company name", "counterparty name"]
+        },
+        {
+          "logical_name": "Short Name",
+          "physical_name": "short_name",
+          "graphql_name": "shortName",
+          "data_type": "VARCHAR(100)",
+          "description": "Abbreviated or commonly used name",
+          "synonyms": ["display name", "common name", "ticker name"]
+        },
+        {
+          "logical_name": "Party Type",
+          "physical_name": "party_type_code",
+          "graphql_name": "partyTypeCode",
+          "data_type": "VARCHAR(10)",
+          "description": "Classification of the party entity type",
+          "synonyms": ["entity type", "counterparty type", "type"],
+          "value_dictionary": {
+            "CORP": "Corporation",
+            "BANK": "Bank or financial institution",
+            "GOVT": "Government or sovereign entity",
+            "FUND": "Investment fund or asset manager",
+            "SPV": "Special purpose vehicle",
+            "INDIV": "Individual person",
+            "INTRL": "Internal business unit"
+          }
+        },
+        {
+          "logical_name": "Party Role",
+          "physical_name": "party_role_code",
+          "graphql_name": "partyRoleCode",
+          "data_type": "VARCHAR(10)",
+          "description": "The role this party plays in business relationships",
+          "synonyms": ["role", "relationship type"],
+          "value_dictionary": {
+            "CPTY": "Counterparty in trades",
+            "ISSUER": "Issuer of securities",
+            "CUSTDN": "Custodian holding assets",
+            "BROKER": "Broker or dealer",
+            "CLRING": "Clearing house",
+            "CLIENT": "Client of the firm",
+            "INTERN": "Internal entity"
+          }
+        },
+        {
+          "logical_name": "LEI Code",
+          "physical_name": "lei_code",
+          "graphql_name": "leiCode",
+          "data_type": "VARCHAR(20)",
+          "description": "Legal Entity Identifier - 20-character global identifier for legal entities in financial transactions",
+          "synonyms": ["LEI", "legal entity identifier"]
+        },
+        {
+          "logical_name": "Country",
+          "physical_name": "country_code",
+          "graphql_name": "countryCode",
+          "data_type": "VARCHAR(3)",
+          "description": "ISO 3166 country code of the party's domicile",
+          "synonyms": ["country", "domicile", "jurisdiction"]
+        },
+        {
+          "logical_name": "Region",
+          "physical_name": "region_code",
+          "graphql_name": "regionCode",
+          "data_type": "VARCHAR(10)",
+          "description": "Geographic region classification",
+          "synonyms": ["region", "geography", "geo"],
+          "value_dictionary": {
+            "NAM": "North America",
+            "EMEA": "Europe, Middle East & Africa",
+            "APAC": "Asia Pacific",
+            "LATAM": "Latin America"
+          }
+        },
+        {
+          "logical_name": "Industry",
+          "physical_name": "industry_code",
+          "graphql_name": "industryCode",
+          "data_type": "VARCHAR(10)",
+          "description": "Industry sector classification of the party",
+          "synonyms": ["sector", "industry", "industry sector"],
+          "value_dictionary": {
+            "TECH": "Technology",
+            "FINL": "Financial Services",
+            "HLTH": "Healthcare",
+            "ENRG": "Energy",
+            "RETL": "Retail",
+            "MFGR": "Manufacturing",
+            "REAL": "Real Estate",
+            "UTIL": "Utilities"
+          }
+        },
+        {
+          "logical_name": "Parent Party",
+          "physical_name": "parent_party_id",
+          "graphql_name": "parentPartyId",
+          "data_type": "VARCHAR(20)",
+          "description": "Immediate parent entity in the corporate hierarchy",
+          "synonyms": ["parent", "parent company", "parent entity"],
+          "foreign_key": "party_master.party_id"
+        },
+        {
+          "logical_name": "Ultimate Parent",
+          "physical_name": "ultimate_parent_id",
+          "graphql_name": "ultimateParentId",
+          "data_type": "VARCHAR(20)",
+          "description": "Top-level parent entity in the corporate hierarchy",
+          "synonyms": ["ultimate parent", "top parent", "group parent"],
+          "foreign_key": "party_master.party_id"
+        },
+        {
+          "logical_name": "Status",
+          "physical_name": "status_code",
+          "graphql_name": "statusCode",
+          "data_type": "VARCHAR(5)",
+          "description": "Current status of the party record",
+          "synonyms": ["party status", "status", "state"],
+          "value_dictionary": {
+            "A": "Active",
+            "I": "Inactive",
+            "P": "Pending onboarding",
+            "S": "Suspended",
+            "T": "Terminated"
+          }
+        },
+        {
+          "logical_name": "Onboarding Date",
+          "physical_name": "onboarding_date",
+          "graphql_name": "onboardingDate",
+          "data_type": "DATE",
+          "description": "Date when the party was onboarded as a counterparty",
+          "synonyms": ["setup date", "registration date"]
+        },
+        {
+          "logical_name": "Last KYC Date",
+          "physical_name": "last_kyc_date",
+          "graphql_name": "lastKycDate",
+          "data_type": "DATE",
+          "description": "Date of the most recent Know Your Customer review",
+          "synonyms": ["KYC date", "last review date", "compliance date"]
+        }
+      ],
+      "business_rules": [
+        {
+          "rule_name": "Active Counterparty",
+          "description": "A party is considered active when status is Active",
+          "sql_predicate": "status_code = 'A'",
+          "graphql_filter": "statusCode: \"A\""
+        },
+        {
+          "rule_name": "External Party",
+          "description": "Excludes internal business units from party queries unless specifically requested",
+          "sql_predicate": "party_type_code != 'INTRL'",
+          "graphql_filter": "partyTypeCode_not: \"INTRL\""
+        },
+        {
+          "rule_name": "KYC Overdue",
+          "description": "A party whose KYC review is overdue (last review more than 12 months ago)",
+          "sql_predicate": "last_kyc_date < DATEADD(month, -12, CURRENT_DATE())",
+          "graphql_filter": null
+        },
+        {
+          "rule_name": "APAC Region",
+          "description": "Parties in the Asia Pacific region",
+          "sql_predicate": "region_code = 'APAC'",
+          "graphql_filter": "regionCode: \"APAC\""
+        }
+      ],
+      "query_examples": [
+        {
+          "question": "List all active counterparties in APAC region",
+          "query_type": "sql",
+          "query": "SELECT party_id, legal_name, short_name, country_code, party_type_code, industry_code\nFROM party_master\nWHERE status_code = 'A'\n  AND party_type_code != 'INTRL'\n  AND region_code = 'APAC'\nORDER BY legal_name;"
+        },
+        {
+          "question": "Find the LEI code for Goldman Sachs",
+          "query_type": "sql",
+          "query": "SELECT party_id, legal_name, lei_code, country_code\nFROM party_master\nWHERE legal_name ILIKE '%Goldman Sachs%'\n  OR short_name ILIKE '%Goldman%';"
+        },
+        {
+          "question": "Which counterparties have overdue KYC reviews?",
+          "query_type": "sql",
+          "query": "SELECT party_id, legal_name, last_kyc_date, DATEDIFF(month, last_kyc_date, CURRENT_DATE()) AS months_since_kyc\nFROM party_master\nWHERE status_code = 'A'\n  AND party_type_code != 'INTRL'\n  AND last_kyc_date < DATEADD(month, -12, CURRENT_DATE())\nORDER BY last_kyc_date;"
+        },
+        {
+          "question": "Show me the corporate hierarchy for a given party",
+          "query_type": "sql",
+          "query": "SELECT p.party_id, p.legal_name, p.parent_party_id,\n  pp.legal_name AS parent_name,\n  p.ultimate_parent_id,\n  up.legal_name AS ultimate_parent_name\nFROM party_master p\nLEFT JOIN party_master pp ON p.parent_party_id = pp.party_id\nLEFT JOIN party_master up ON p.ultimate_parent_id = up.party_id\nWHERE p.party_id = :party_id;"
+        },
+        {
+          "question": "Get details for a counterparty",
+          "query_type": "graphql",
+          "query": "query GetParty($id: ID!) {\n  party(partyId: $id) {\n    partyId\n    legalName\n    shortName\n    partyTypeCode\n    leiCode\n    countryCode\n    regionCode\n    statusCode\n  }\n}"
+        }
+      ]
+    },
+    {
+      "product_id": "account_master",
+      "name": "Account Master",
+      "domain": "Reference Data",
+      "subdomain": "Accounts",
+      "description": "System of record for all trading, custody, and settlement accounts. Contains account identification, classification, ownership, and custodian information linking accounts to parties and business units.",
+      "distribution_type": "datamesh",
+      "schema_sql": "CREATE TABLE account_master (\n  account_id VARCHAR(20) PRIMARY KEY,\n  account_name VARCHAR(200),\n  account_type_code VARCHAR(10),\n  account_category VARCHAR(20),\n  owning_party_id VARCHAR(20),\n  custodian_party_id VARCHAR(20),\n  prime_broker_id VARCHAR(20),\n  base_currency VARCHAR(3),\n  booking_entity VARCHAR(20),\n  desk_code VARCHAR(10),\n  strategy_code VARCHAR(20),\n  status_code VARCHAR(5),\n  open_date DATE,\n  close_date DATE,\n  created_date TIMESTAMP,\n  last_updated_date TIMESTAMP\n);",
+      "schema_graphql": null,
+      "attributes": [
+        {
+          "logical_name": "Account ID",
+          "physical_name": "account_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Unique identifier for the account",
+          "synonyms": ["account number", "acct id", "account identifier"],
+          "is_primary_key": true
+        },
+        {
+          "logical_name": "Account Name",
+          "physical_name": "account_name",
+          "data_type": "VARCHAR(200)",
+          "description": "Descriptive name of the account",
+          "synonyms": ["name", "account description"]
+        },
+        {
+          "logical_name": "Account Type",
+          "physical_name": "account_type_code",
+          "data_type": "VARCHAR(10)",
+          "description": "Classification of the account type",
+          "synonyms": ["type", "acct type"],
+          "value_dictionary": {
+            "TRADING": "Proprietary trading account",
+            "CLIENT": "Client/customer account",
+            "CUSTODY": "Custody/safekeeping account",
+            "SETTLE": "Settlement account",
+            "MARGIN": "Margin account",
+            "COLLAT": "Collateral account"
+          }
+        },
+        {
+          "logical_name": "Account Category",
+          "physical_name": "account_category",
+          "data_type": "VARCHAR(20)",
+          "description": "Broader categorization of the account",
+          "synonyms": ["category"],
+          "value_dictionary": {
+            "PROP": "Proprietary/house accounts",
+            "AGENCY": "Agency/client accounts",
+            "FIDUCIARY": "Fiduciary/trust accounts"
+          }
+        },
+        {
+          "logical_name": "Owning Party",
+          "physical_name": "owning_party_id",
+          "data_type": "VARCHAR(20)",
+          "description": "The party that owns this account, references party_master.party_id",
+          "synonyms": ["owner", "account owner", "owning entity"],
+          "foreign_key": "party_master.party_id"
+        },
+        {
+          "logical_name": "Custodian",
+          "physical_name": "custodian_party_id",
+          "data_type": "VARCHAR(20)",
+          "description": "The custodian bank holding assets in this account, references party_master.party_id",
+          "synonyms": ["custodian", "custodian bank", "depository"],
+          "foreign_key": "party_master.party_id"
+        },
+        {
+          "logical_name": "Prime Broker",
+          "physical_name": "prime_broker_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Prime broker associated with this account, references party_master.party_id",
+          "synonyms": ["PB", "prime broker"],
+          "foreign_key": "party_master.party_id"
+        },
+        {
+          "logical_name": "Base Currency",
+          "physical_name": "base_currency",
+          "data_type": "VARCHAR(3)",
+          "description": "Base reporting currency for the account",
+          "synonyms": ["currency", "reporting currency", "denomination"]
+        },
+        {
+          "logical_name": "Booking Entity",
+          "physical_name": "booking_entity",
+          "data_type": "VARCHAR(20)",
+          "description": "Internal legal entity that books trades in this account",
+          "synonyms": ["entity", "booking company", "legal entity"]
+        },
+        {
+          "logical_name": "Desk",
+          "physical_name": "desk_code",
+          "data_type": "VARCHAR(10)",
+          "description": "Trading desk associated with this account",
+          "synonyms": ["trading desk", "desk"],
+          "value_dictionary": {
+            "EQ_CASH": "Equity Cash Trading",
+            "EQ_DERIV": "Equity Derivatives",
+            "FI_RATES": "Fixed Income Rates",
+            "FI_CREDIT": "Fixed Income Credit",
+            "FX_SPOT": "FX Spot Trading",
+            "FX_OPT": "FX Options",
+            "CMDTY": "Commodities"
+          }
+        },
+        {
+          "logical_name": "Strategy",
+          "physical_name": "strategy_code",
+          "data_type": "VARCHAR(20)",
+          "description": "Investment or trading strategy classification",
+          "synonyms": ["investment strategy", "trading strategy"]
+        },
+        {
+          "logical_name": "Status",
+          "physical_name": "status_code",
+          "data_type": "VARCHAR(5)",
+          "description": "Current status of the account",
+          "synonyms": ["account status", "status"],
+          "value_dictionary": {
+            "A": "Active - open and available for trading",
+            "I": "Inactive - temporarily disabled",
+            "C": "Closed - permanently closed",
+            "P": "Pending - awaiting approval"
+          }
+        },
+        {
+          "logical_name": "Open Date",
+          "physical_name": "open_date",
+          "data_type": "DATE",
+          "description": "Date when the account was opened",
+          "synonyms": ["opening date", "inception date"]
+        },
+        {
+          "logical_name": "Close Date",
+          "physical_name": "close_date",
+          "data_type": "DATE",
+          "description": "Date when the account was closed, NULL if still open",
+          "synonyms": ["closing date", "termination date"]
+        }
+      ],
+      "business_rules": [
+        {
+          "rule_name": "Active Account",
+          "description": "An account is active when status is Active and close_date is NULL",
+          "sql_predicate": "status_code = 'A' AND close_date IS NULL"
+        },
+        {
+          "rule_name": "Custody Account",
+          "description": "Accounts held at external custodians",
+          "sql_predicate": "account_type_code = 'CUSTODY' AND custodian_party_id IS NOT NULL"
+        },
+        {
+          "rule_name": "Proprietary Account",
+          "description": "House/proprietary trading accounts (not client accounts)",
+          "sql_predicate": "account_category = 'PROP'"
+        },
+        {
+          "rule_name": "Client Account",
+          "description": "Accounts belonging to external clients",
+          "sql_predicate": "account_category = 'AGENCY' AND account_type_code = 'CLIENT'"
+        }
+      ],
+      "query_examples": [
+        {
+          "question": "Show me all active trading accounts for the equity desk",
+          "query_type": "sql",
+          "query": "SELECT account_id, account_name, account_type_code, base_currency, strategy_code\nFROM account_master\nWHERE status_code = 'A'\n  AND close_date IS NULL\n  AND account_type_code = 'TRADING'\n  AND desk_code IN ('EQ_CASH', 'EQ_DERIV')\nORDER BY account_name;"
+        },
+        {
+          "question": "Which accounts are held at custodian X?",
+          "query_type": "sql",
+          "query": "SELECT a.account_id, a.account_name, a.account_type_code, a.base_currency,\n  p.legal_name AS custodian_name\nFROM account_master a\nJOIN party_master p ON a.custodian_party_id = p.party_id\nWHERE a.status_code = 'A'\n  AND a.close_date IS NULL\n  AND a.custodian_party_id = :custodian_id\nORDER BY a.account_name;"
+        },
+        {
+          "question": "List all client accounts opened this year",
+          "query_type": "sql",
+          "query": "SELECT account_id, account_name, owning_party_id, base_currency, open_date\nFROM account_master\nWHERE account_category = 'AGENCY'\n  AND account_type_code = 'CLIENT'\n  AND open_date >= DATE_TRUNC('year', CURRENT_DATE())\nORDER BY open_date DESC;"
+        },
+        {
+          "question": "How many accounts does each desk have?",
+          "query_type": "sql",
+          "query": "SELECT desk_code, COUNT(*) AS account_count\nFROM account_master\nWHERE status_code = 'A' AND close_date IS NULL\nGROUP BY desk_code\nORDER BY account_count DESC;"
+        }
+      ]
+    },
+    {
+      "product_id": "trade_ledger",
+      "name": "Trade Ledger",
+      "domain": "Capital Markets",
+      "subdomain": "Trading",
+      "description": "Record of all executed trades including equities, fixed income, derivatives, and FX. Contains trade economics, counterparty information, settlement details, and lifecycle events from execution through settlement.",
+      "distribution_type": "datamesh",
+      "schema_sql": "CREATE TABLE trade_ledger (\n  trade_id VARCHAR(30) PRIMARY KEY,\n  instrument_id VARCHAR(20),\n  account_id VARCHAR(20),\n  counterparty_id VARCHAR(20),\n  trade_date DATE,\n  settlement_date DATE,\n  value_date DATE,\n  trade_type VARCHAR(10),\n  buy_sell_indicator VARCHAR(4),\n  quantity DECIMAL(18,4),\n  price DECIMAL(18,6),\n  gross_amount DECIMAL(18,2),\n  net_amount DECIMAL(18,2),\n  commission DECIMAL(18,2),\n  fees DECIMAL(18,2),\n  currency_code VARCHAR(3),\n  settlement_currency VARCHAR(3),\n  execution_venue VARCHAR(20),\n  broker_id VARCHAR(20),\n  trader_id VARCHAR(20),\n  status_code VARCHAR(10),\n  booking_date TIMESTAMP,\n  created_date TIMESTAMP,\n  last_updated_date TIMESTAMP\n);",
+      "schema_graphql": null,
+      "attributes": [
+        {
+          "logical_name": "Trade ID",
+          "physical_name": "trade_id",
+          "data_type": "VARCHAR(30)",
+          "description": "Unique identifier for the trade",
+          "synonyms": ["trade number", "deal id", "transaction id", "trade ref"],
+          "is_primary_key": true
+        },
+        {
+          "logical_name": "Instrument ID",
+          "physical_name": "instrument_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Identifier of the traded instrument, references instrument_master.instrument_id",
+          "synonyms": ["security id", "instrument"],
+          "foreign_key": "instrument_master.instrument_id"
+        },
+        {
+          "logical_name": "Account ID",
+          "physical_name": "account_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Account in which the trade is booked, references account_master.account_id",
+          "synonyms": ["account", "booking account"],
+          "foreign_key": "account_master.account_id"
+        },
+        {
+          "logical_name": "Counterparty ID",
+          "physical_name": "counterparty_id",
+          "data_type": "VARCHAR(20)",
+          "description": "The other party in the trade, references party_master.party_id",
+          "synonyms": ["counterparty", "counter party", "cpty"],
+          "foreign_key": "party_master.party_id"
+        },
+        {
+          "logical_name": "Trade Date",
+          "physical_name": "trade_date",
+          "data_type": "DATE",
+          "description": "Date when the trade was executed",
+          "synonyms": ["execution date", "deal date", "transaction date"]
+        },
+        {
+          "logical_name": "Settlement Date",
+          "physical_name": "settlement_date",
+          "data_type": "DATE",
+          "description": "Date when the trade settles (delivery vs payment)",
+          "synonyms": ["settle date", "delivery date"]
+        },
+        {
+          "logical_name": "Trade Type",
+          "physical_name": "trade_type",
+          "data_type": "VARCHAR(10)",
+          "description": "Type of trade transaction",
+          "synonyms": ["transaction type"],
+          "value_dictionary": {
+            "OUTRIGHT": "Outright buy or sell",
+            "REPO": "Repurchase agreement",
+            "SWAP": "Swap transaction",
+            "OPTION": "Option trade",
+            "BLOCK": "Block trade",
+            "CROSS": "Internal cross trade"
+          }
+        },
+        {
+          "logical_name": "Buy/Sell",
+          "physical_name": "buy_sell_indicator",
+          "data_type": "VARCHAR(4)",
+          "description": "Whether the trade is a buy or sell from our perspective",
+          "synonyms": ["side", "direction", "buy sell", "B/S"],
+          "value_dictionary": {
+            "BUY": "Purchase",
+            "SELL": "Sale"
+          }
+        },
+        {
+          "logical_name": "Quantity",
+          "physical_name": "quantity",
+          "data_type": "DECIMAL(18,4)",
+          "description": "Number of units/shares/contracts traded",
+          "synonyms": ["shares", "units", "contracts", "notional quantity", "size"]
+        },
+        {
+          "logical_name": "Price",
+          "physical_name": "price",
+          "data_type": "DECIMAL(18,6)",
+          "description": "Execution price per unit",
+          "synonyms": ["execution price", "trade price", "deal price"]
+        },
+        {
+          "logical_name": "Gross Amount",
+          "physical_name": "gross_amount",
+          "data_type": "DECIMAL(18,2)",
+          "description": "Total trade amount before fees (quantity * price)",
+          "synonyms": ["gross consideration", "principal amount", "gross value"]
+        },
+        {
+          "logical_name": "Net Amount",
+          "physical_name": "net_amount",
+          "data_type": "DECIMAL(18,2)",
+          "description": "Total trade amount after fees and commissions",
+          "synonyms": ["net consideration", "net value", "settlement amount"]
+        },
+        {
+          "logical_name": "Commission",
+          "physical_name": "commission",
+          "data_type": "DECIMAL(18,2)",
+          "description": "Broker commission charged on the trade",
+          "synonyms": ["brokerage", "commission fee"]
+        },
+        {
+          "logical_name": "Currency",
+          "physical_name": "currency_code",
+          "data_type": "VARCHAR(3)",
+          "description": "Trade currency",
+          "synonyms": ["trade currency", "ccy"]
+        },
+        {
+          "logical_name": "Execution Venue",
+          "physical_name": "execution_venue",
+          "data_type": "VARCHAR(20)",
+          "description": "Where the trade was executed",
+          "synonyms": ["venue", "exchange", "marketplace"],
+          "value_dictionary": {
+            "NYSE": "New York Stock Exchange",
+            "NASDAQ": "NASDAQ",
+            "LSE": "London Stock Exchange",
+            "OTC": "Over-the-Counter",
+            "DARK": "Dark pool",
+            "INTERNAL": "Internal crossing"
+          }
+        },
+        {
+          "logical_name": "Broker",
+          "physical_name": "broker_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Executing broker, references party_master.party_id",
+          "synonyms": ["executing broker", "dealer"],
+          "foreign_key": "party_master.party_id"
+        },
+        {
+          "logical_name": "Trader",
+          "physical_name": "trader_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Identifier of the trader who executed the trade",
+          "synonyms": ["trader", "portfolio manager", "PM"]
+        },
+        {
+          "logical_name": "Status",
+          "physical_name": "status_code",
+          "data_type": "VARCHAR(10)",
+          "description": "Current lifecycle status of the trade",
+          "synonyms": ["trade status", "status"],
+          "value_dictionary": {
+            "NEW": "Newly booked",
+            "CONF": "Confirmed by counterparty",
+            "SETTLE": "Settled",
+            "PART_SET": "Partially settled",
+            "FAIL": "Failed settlement",
+            "CXL": "Cancelled",
+            "REJ": "Rejected",
+            "PEND": "Pending confirmation"
+          }
+        }
+      ],
+      "business_rules": [
+        {
+          "rule_name": "Confirmed Trades",
+          "description": "Only include trades that are confirmed or settled; exclude cancelled, rejected, and pending trades",
+          "sql_predicate": "status_code NOT IN ('CXL', 'REJ', 'PEND')"
+        },
+        {
+          "rule_name": "Settled Trades",
+          "description": "Trades that have fully settled",
+          "sql_predicate": "status_code = 'SETTLE'"
+        },
+        {
+          "rule_name": "Unsettled Trades",
+          "description": "Trades that are confirmed but not yet settled",
+          "sql_predicate": "status_code IN ('CONF', 'NEW') AND settlement_date > CURRENT_DATE()"
+        },
+        {
+          "rule_name": "Failed Trades",
+          "description": "Trades that failed to settle on the intended settlement date",
+          "sql_predicate": "status_code = 'FAIL' OR (status_code IN ('CONF', 'NEW') AND settlement_date < CURRENT_DATE())"
+        },
+        {
+          "rule_name": "Buy Trades",
+          "description": "Trades where we are the buyer",
+          "sql_predicate": "buy_sell_indicator = 'BUY'"
+        },
+        {
+          "rule_name": "Sell Trades",
+          "description": "Trades where we are the seller",
+          "sql_predicate": "buy_sell_indicator = 'SELL'"
+        }
+      ],
+      "query_examples": [
+        {
+          "question": "Show me all trades executed today",
+          "query_type": "sql",
+          "query": "SELECT trade_id, instrument_id, buy_sell_indicator, quantity, price, gross_amount, currency_code, counterparty_id, status_code\nFROM trade_ledger\nWHERE trade_date = CURRENT_DATE()\n  AND status_code NOT IN ('CXL', 'REJ')\nORDER BY booking_date DESC;"
+        },
+        {
+          "question": "What are the unsettled trades for account X?",
+          "query_type": "sql",
+          "query": "SELECT t.trade_id, t.instrument_id, t.trade_date, t.settlement_date, t.buy_sell_indicator,\n  t.quantity, t.price, t.net_amount, t.currency_code, t.status_code\nFROM trade_ledger t\nWHERE t.account_id = :account_id\n  AND t.status_code IN ('CONF', 'NEW')\n  AND t.settlement_date >= CURRENT_DATE()\nORDER BY t.settlement_date;"
+        },
+        {
+          "question": "Total buy volume by instrument this month",
+          "query_type": "sql",
+          "query": "SELECT instrument_id, SUM(quantity) AS total_quantity, SUM(gross_amount) AS total_value, COUNT(*) AS trade_count\nFROM trade_ledger\nWHERE trade_date >= DATE_TRUNC('month', CURRENT_DATE())\n  AND buy_sell_indicator = 'BUY'\n  AND status_code NOT IN ('CXL', 'REJ', 'PEND')\nGROUP BY instrument_id\nORDER BY total_value DESC;"
+        },
+        {
+          "question": "Show me failed trades in the last week",
+          "query_type": "sql",
+          "query": "SELECT t.trade_id, t.instrument_id, t.counterparty_id, t.trade_date, t.settlement_date,\n  t.quantity, t.net_amount, t.currency_code, t.status_code\nFROM trade_ledger t\nWHERE (t.status_code = 'FAIL' OR (t.status_code IN ('CONF', 'NEW') AND t.settlement_date < CURRENT_DATE()))\n  AND t.trade_date >= DATEADD(day, -7, CURRENT_DATE())\nORDER BY t.settlement_date;"
+        },
+        {
+          "question": "How much commission did we pay to broker Y this quarter?",
+          "query_type": "sql",
+          "query": "SELECT broker_id, SUM(commission) AS total_commission, COUNT(*) AS trade_count\nFROM trade_ledger\nWHERE broker_id = :broker_id\n  AND trade_date >= DATE_TRUNC('quarter', CURRENT_DATE())\n  AND status_code NOT IN ('CXL', 'REJ')\nGROUP BY broker_id;"
+        }
+      ]
+    },
+    {
+      "product_id": "position_book",
+      "name": "Position Book",
+      "domain": "Capital Markets",
+      "subdomain": "Positions",
+      "description": "End-of-day position snapshots showing holdings across all accounts and instruments. Contains quantity, cost basis, market value, and P&L information for portfolio management and risk reporting.",
+      "distribution_type": "datamesh",
+      "schema_sql": "CREATE TABLE position_book (\n  position_id VARCHAR(30) PRIMARY KEY,\n  instrument_id VARCHAR(20),\n  account_id VARCHAR(20),\n  position_date DATE,\n  quantity DECIMAL(18,4),\n  long_short_indicator VARCHAR(5),\n  cost_basis DECIMAL(18,2),\n  average_cost DECIMAL(18,6),\n  market_value DECIMAL(18,2),\n  unrealized_pnl DECIMAL(18,2),\n  realized_pnl DECIMAL(18,2),\n  total_pnl DECIMAL(18,2),\n  currency_code VARCHAR(3),\n  market_price DECIMAL(18,6),\n  price_date DATE,\n  created_date TIMESTAMP,\n  last_updated_date TIMESTAMP\n);",
+      "schema_graphql": null,
+      "attributes": [
+        {
+          "logical_name": "Position ID",
+          "physical_name": "position_id",
+          "data_type": "VARCHAR(30)",
+          "description": "Unique identifier for the position record",
+          "synonyms": ["position identifier"],
+          "is_primary_key": true
+        },
+        {
+          "logical_name": "Instrument ID",
+          "physical_name": "instrument_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Instrument held in this position, references instrument_master.instrument_id",
+          "synonyms": ["security id", "instrument", "holding"],
+          "foreign_key": "instrument_master.instrument_id"
+        },
+        {
+          "logical_name": "Account ID",
+          "physical_name": "account_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Account holding this position, references account_master.account_id",
+          "synonyms": ["account", "portfolio"],
+          "foreign_key": "account_master.account_id"
+        },
+        {
+          "logical_name": "Position Date",
+          "physical_name": "position_date",
+          "data_type": "DATE",
+          "description": "Business date of this position snapshot",
+          "synonyms": ["as of date", "date", "snapshot date", "business date"]
+        },
+        {
+          "logical_name": "Quantity",
+          "physical_name": "quantity",
+          "data_type": "DECIMAL(18,4)",
+          "description": "Number of units/shares held (positive for long, negative for short)",
+          "synonyms": ["shares", "units", "holdings", "size"]
+        },
+        {
+          "logical_name": "Long/Short",
+          "physical_name": "long_short_indicator",
+          "data_type": "VARCHAR(5)",
+          "description": "Whether the position is long or short",
+          "synonyms": ["direction", "side"],
+          "value_dictionary": {
+            "LONG": "Long position (we own the asset)",
+            "SHORT": "Short position (we owe the asset)"
+          }
+        },
+        {
+          "logical_name": "Cost Basis",
+          "physical_name": "cost_basis",
+          "data_type": "DECIMAL(18,2)",
+          "description": "Total cost of acquiring the position",
+          "synonyms": ["book value", "cost", "acquisition cost"]
+        },
+        {
+          "logical_name": "Average Cost",
+          "physical_name": "average_cost",
+          "data_type": "DECIMAL(18,6)",
+          "description": "Weighted average cost per unit",
+          "synonyms": ["avg cost", "average price", "cost per share"]
+        },
+        {
+          "logical_name": "Market Value",
+          "physical_name": "market_value",
+          "data_type": "DECIMAL(18,2)",
+          "description": "Current market value of the position (quantity * market_price)",
+          "synonyms": ["MV", "mark to market", "MTM", "current value", "exposure"]
+        },
+        {
+          "logical_name": "Unrealized P&L",
+          "physical_name": "unrealized_pnl",
+          "data_type": "DECIMAL(18,2)",
+          "description": "Unrealized profit/loss (market_value - cost_basis)",
+          "synonyms": ["unrealized profit", "unrealized loss", "paper P&L", "open P&L"]
+        },
+        {
+          "logical_name": "Realized P&L",
+          "physical_name": "realized_pnl",
+          "data_type": "DECIMAL(18,2)",
+          "description": "Realized profit/loss from closed portions of the position",
+          "synonyms": ["realized profit", "realized loss", "closed P&L"]
+        },
+        {
+          "logical_name": "Total P&L",
+          "physical_name": "total_pnl",
+          "data_type": "DECIMAL(18,2)",
+          "description": "Total profit/loss (unrealized + realized)",
+          "synonyms": ["P&L", "PnL", "profit and loss", "total return"]
+        },
+        {
+          "logical_name": "Currency",
+          "physical_name": "currency_code",
+          "data_type": "VARCHAR(3)",
+          "description": "Currency of the position values",
+          "synonyms": ["ccy", "reporting currency"]
+        },
+        {
+          "logical_name": "Market Price",
+          "physical_name": "market_price",
+          "data_type": "DECIMAL(18,6)",
+          "description": "Price used for mark-to-market valuation",
+          "synonyms": ["mark price", "valuation price", "MTM price"]
+        }
+      ],
+      "business_rules": [
+        {
+          "rule_name": "Current Position",
+          "description": "The latest position snapshot — use the most recent position_date",
+          "sql_predicate": "position_date = (SELECT MAX(position_date) FROM position_book)"
+        },
+        {
+          "rule_name": "Long Position",
+          "description": "Positions where we hold/own the asset",
+          "sql_predicate": "long_short_indicator = 'LONG' AND quantity > 0"
+        },
+        {
+          "rule_name": "Short Position",
+          "description": "Positions where we owe the asset (short selling)",
+          "sql_predicate": "long_short_indicator = 'SHORT' AND quantity < 0"
+        },
+        {
+          "rule_name": "Non-Zero Positions",
+          "description": "Exclude flat/zero positions which represent closed-out holdings",
+          "sql_predicate": "quantity != 0"
+        },
+        {
+          "rule_name": "Profitable Position",
+          "description": "Positions with positive total P&L",
+          "sql_predicate": "total_pnl > 0"
+        },
+        {
+          "rule_name": "Losing Position",
+          "description": "Positions with negative total P&L",
+          "sql_predicate": "total_pnl < 0"
+        }
+      ],
+      "query_examples": [
+        {
+          "question": "What are my current positions in account X?",
+          "query_type": "sql",
+          "query": "SELECT p.instrument_id, p.quantity, p.long_short_indicator, p.market_value, p.unrealized_pnl, p.currency_code\nFROM position_book p\nWHERE p.account_id = :account_id\n  AND p.position_date = (SELECT MAX(position_date) FROM position_book)\n  AND p.quantity != 0\nORDER BY ABS(p.market_value) DESC;"
+        },
+        {
+          "question": "Show me the top 10 positions by market value",
+          "query_type": "sql",
+          "query": "SELECT instrument_id, account_id, quantity, market_value, unrealized_pnl, currency_code\nFROM position_book\nWHERE position_date = (SELECT MAX(position_date) FROM position_book)\n  AND quantity != 0\nORDER BY ABS(market_value) DESC\nLIMIT 10;"
+        },
+        {
+          "question": "What is the total P&L across all positions?",
+          "query_type": "sql",
+          "query": "SELECT SUM(unrealized_pnl) AS total_unrealized,\n  SUM(realized_pnl) AS total_realized,\n  SUM(total_pnl) AS grand_total_pnl\nFROM position_book\nWHERE position_date = (SELECT MAX(position_date) FROM position_book)\n  AND quantity != 0;"
+        },
+        {
+          "question": "Show me all short positions",
+          "query_type": "sql",
+          "query": "SELECT instrument_id, account_id, quantity, market_value, unrealized_pnl, currency_code\nFROM position_book\nWHERE position_date = (SELECT MAX(position_date) FROM position_book)\n  AND long_short_indicator = 'SHORT'\n  AND quantity != 0\nORDER BY market_value ASC;"
+        },
+        {
+          "question": "What positions do we hold in instrument Y as of last Friday?",
+          "query_type": "sql",
+          "query": "SELECT account_id, quantity, long_short_indicator, market_value, cost_basis, unrealized_pnl\nFROM position_book\nWHERE instrument_id = :instrument_id\n  AND position_date = :as_of_date\n  AND quantity != 0\nORDER BY ABS(market_value) DESC;"
+        }
+      ]
+    },
+    {
+      "product_id": "fund_master",
+      "name": "Fund Master",
+      "domain": "Asset Management",
+      "subdomain": "Funds",
+      "description": "System of record for all managed funds, portfolios, and investment vehicles. Contains fund identification, classification, strategy, fee structures, AUM, NAV, and regulatory information. Covers UCITS, AIFs, 40-Act funds, ETFs, and separately managed accounts.",
+      "distribution_type": "both",
+      "schema_sql": "CREATE TABLE fund_master (\n  fund_id VARCHAR(20) PRIMARY KEY,\n  fund_name VARCHAR(300),\n  fund_short_name VARCHAR(100),\n  fund_type_code VARCHAR(10),\n  investment_strategy VARCHAR(20),\n  asset_class_focus VARCHAR(10),\n  benchmark_id VARCHAR(20),\n  portfolio_manager_id VARCHAR(20),\n  management_company_id VARCHAR(20),\n  inception_date DATE,\n  termination_date DATE,\n  base_currency VARCHAR(3),\n  nav_per_unit DECIMAL(18,6),\n  total_aum DECIMAL(18,2),\n  management_fee_bps DECIMAL(8,2),\n  performance_fee_pct DECIMAL(8,4),\n  high_water_mark DECIMAL(18,6),\n  hurdle_rate DECIMAL(8,4),\n  min_investment DECIMAL(18,2),\n  subscription_frequency VARCHAR(10),\n  redemption_frequency VARCHAR(10),\n  redemption_notice_days INT,\n  lockup_period_months INT,\n  domicile_country VARCHAR(3),\n  regulatory_framework VARCHAR(10),\n  fund_status VARCHAR(5),\n  created_date TIMESTAMP,\n  last_updated_date TIMESTAMP\n);",
+      "schema_graphql": "type Fund {\n  fundId: ID!\n  fundName: String!\n  fundShortName: String\n  fundTypeCode: String!\n  investmentStrategy: String\n  assetClassFocus: String\n  benchmarkId: String\n  portfolioManagerId: String\n  managementCompanyId: String\n  inceptionDate: Date\n  terminationDate: Date\n  baseCurrency: String!\n  navPerUnit: Float\n  totalAum: Float\n  managementFeeBps: Float\n  performanceFeePct: Float\n  subscriptionFrequency: String\n  redemptionFrequency: String\n  domicileCountry: String\n  regulatoryFramework: String\n  fundStatus: String!\n}\n\ntype Query {\n  fund(fundId: ID!): Fund\n  funds(filter: FundFilter, limit: Int, offset: Int): [Fund!]!\n}\n\ninput FundFilter {\n  fundTypeCode: String\n  investmentStrategy: String\n  assetClassFocus: String\n  regulatoryFramework: String\n  fundStatus: String\n}",
+      "attributes": [
+        {
+          "logical_name": "Fund ID",
+          "physical_name": "fund_id",
+          "graphql_name": "fundId",
+          "data_type": "VARCHAR(20)",
+          "description": "Unique identifier for the fund or portfolio",
+          "synonyms": ["portfolio id", "fund identifier", "vehicle id"],
+          "is_primary_key": true
+        },
+        {
+          "logical_name": "Fund Name",
+          "physical_name": "fund_name",
+          "graphql_name": "fundName",
+          "data_type": "VARCHAR(300)",
+          "description": "Full legal name of the fund",
+          "synonyms": ["portfolio name", "fund", "vehicle name"]
+        },
+        {
+          "logical_name": "Fund Short Name",
+          "physical_name": "fund_short_name",
+          "graphql_name": "fundShortName",
+          "data_type": "VARCHAR(100)",
+          "description": "Abbreviated or commonly used name for the fund",
+          "synonyms": ["short name", "ticker", "display name"]
+        },
+        {
+          "logical_name": "Fund Type",
+          "physical_name": "fund_type_code",
+          "graphql_name": "fundTypeCode",
+          "data_type": "VARCHAR(10)",
+          "description": "Classification of the fund vehicle type",
+          "synonyms": ["vehicle type", "fund category", "type"],
+          "value_dictionary": {
+            "MUTUAL": "Open-end mutual fund",
+            "HEDGE": "Hedge fund",
+            "PE": "Private equity fund",
+            "ETF": "Exchange-traded fund",
+            "SMA": "Separately managed account",
+            "UCITS": "UCITS-compliant fund",
+            "AIF": "Alternative investment fund",
+            "PENSION": "Pension fund",
+            "ENDOW": "Endowment"
+          }
+        },
+        {
+          "logical_name": "Investment Strategy",
+          "physical_name": "investment_strategy",
+          "graphql_name": "investmentStrategy",
+          "data_type": "VARCHAR(20)",
+          "description": "The primary investment strategy employed by the fund",
+          "synonyms": ["strategy", "mandate", "approach"],
+          "value_dictionary": {
+            "LONG_ONLY": "Long only - traditional buy and hold",
+            "LONG_SHORT": "Long/short equity",
+            "MKT_NEUTRAL": "Market neutral",
+            "GLOBAL_MACRO": "Global macro",
+            "EVENT_DRV": "Event driven",
+            "QUANT": "Quantitative/systematic",
+            "VALUE": "Value investing",
+            "GROWTH": "Growth investing",
+            "INDEX": "Passive index tracking",
+            "MULTI_STRAT": "Multi-strategy"
+          }
+        },
+        {
+          "logical_name": "Asset Class Focus",
+          "physical_name": "asset_class_focus",
+          "graphql_name": "assetClassFocus",
+          "data_type": "VARCHAR(10)",
+          "description": "Primary asset class the fund invests in",
+          "synonyms": ["asset class", "focus", "mandate type"],
+          "value_dictionary": {
+            "EQ": "Equity",
+            "FI": "Fixed Income",
+            "MULTI": "Multi-asset / Balanced",
+            "ALT": "Alternatives",
+            "RE": "Real Estate",
+            "CMDTY": "Commodities",
+            "MM": "Money Market"
+          }
+        },
+        {
+          "logical_name": "Benchmark ID",
+          "physical_name": "benchmark_id",
+          "graphql_name": "benchmarkId",
+          "data_type": "VARCHAR(20)",
+          "description": "Primary benchmark index against which the fund is measured, references benchmark_data.benchmark_id",
+          "synonyms": ["benchmark", "index", "reference index"],
+          "foreign_key": "benchmark_data.benchmark_id"
+        },
+        {
+          "logical_name": "Portfolio Manager",
+          "physical_name": "portfolio_manager_id",
+          "graphql_name": "portfolioManagerId",
+          "data_type": "VARCHAR(20)",
+          "description": "Lead portfolio manager responsible for the fund",
+          "synonyms": ["PM", "manager", "fund manager"]
+        },
+        {
+          "logical_name": "Management Company",
+          "physical_name": "management_company_id",
+          "graphql_name": "managementCompanyId",
+          "data_type": "VARCHAR(20)",
+          "description": "Asset management company that manages the fund, references party_master.party_id",
+          "synonyms": ["management company", "asset manager", "ManCo"],
+          "foreign_key": "party_master.party_id"
+        },
+        {
+          "logical_name": "Inception Date",
+          "physical_name": "inception_date",
+          "graphql_name": "inceptionDate",
+          "data_type": "DATE",
+          "description": "Date when the fund was launched",
+          "synonyms": ["launch date", "start date", "formation date"]
+        },
+        {
+          "logical_name": "Base Currency",
+          "physical_name": "base_currency",
+          "graphql_name": "baseCurrency",
+          "data_type": "VARCHAR(3)",
+          "description": "Reporting and denomination currency of the fund",
+          "synonyms": ["currency", "fund currency", "reporting currency"]
+        },
+        {
+          "logical_name": "NAV Per Unit",
+          "physical_name": "nav_per_unit",
+          "graphql_name": "navPerUnit",
+          "data_type": "DECIMAL(18,6)",
+          "description": "Net asset value per share or unit",
+          "synonyms": ["NAV", "unit price", "share price", "net asset value"]
+        },
+        {
+          "logical_name": "Total AUM",
+          "physical_name": "total_aum",
+          "graphql_name": "totalAum",
+          "data_type": "DECIMAL(18,2)",
+          "description": "Total assets under management in the fund's base currency",
+          "synonyms": ["AUM", "assets under management", "fund size", "total assets"]
+        },
+        {
+          "logical_name": "Management Fee",
+          "physical_name": "management_fee_bps",
+          "graphql_name": "managementFeeBps",
+          "data_type": "DECIMAL(8,2)",
+          "description": "Annual management fee in basis points (e.g., 150 = 1.50%)",
+          "synonyms": ["mgmt fee", "management fee", "annual fee", "TER"]
+        },
+        {
+          "logical_name": "Performance Fee",
+          "physical_name": "performance_fee_pct",
+          "graphql_name": "performanceFeePct",
+          "data_type": "DECIMAL(8,4)",
+          "description": "Performance fee as a percentage of profits (e.g., 0.20 = 20%)",
+          "synonyms": ["incentive fee", "carry", "performance fee", "profit share"]
+        },
+        {
+          "logical_name": "High Water Mark",
+          "physical_name": "high_water_mark",
+          "graphql_name": null,
+          "data_type": "DECIMAL(18,6)",
+          "description": "Highest historical NAV used for performance fee calculation",
+          "synonyms": ["HWM", "high water mark", "peak NAV"]
+        },
+        {
+          "logical_name": "Hurdle Rate",
+          "physical_name": "hurdle_rate",
+          "graphql_name": null,
+          "data_type": "DECIMAL(8,4)",
+          "description": "Minimum return threshold before performance fees apply",
+          "synonyms": ["hurdle", "preferred return", "minimum return"]
+        },
+        {
+          "logical_name": "Minimum Investment",
+          "physical_name": "min_investment",
+          "graphql_name": null,
+          "data_type": "DECIMAL(18,2)",
+          "description": "Minimum initial investment amount",
+          "synonyms": ["minimum subscription", "min investment", "minimum commitment"]
+        },
+        {
+          "logical_name": "Subscription Frequency",
+          "physical_name": "subscription_frequency",
+          "graphql_name": "subscriptionFrequency",
+          "data_type": "VARCHAR(10)",
+          "description": "How often new subscriptions are accepted",
+          "synonyms": ["subscription terms", "dealing frequency"],
+          "value_dictionary": {
+            "DAILY": "Daily dealing",
+            "WEEKLY": "Weekly",
+            "MONTHLY": "Monthly",
+            "QUARTERLY": "Quarterly",
+            "CLOSED": "Closed to new subscriptions"
+          }
+        },
+        {
+          "logical_name": "Redemption Frequency",
+          "physical_name": "redemption_frequency",
+          "graphql_name": "redemptionFrequency",
+          "data_type": "VARCHAR(10)",
+          "description": "How often redemptions are processed",
+          "synonyms": ["redemption terms", "liquidity"],
+          "value_dictionary": {
+            "DAILY": "Daily liquidity",
+            "WEEKLY": "Weekly",
+            "MONTHLY": "Monthly",
+            "QUARTERLY": "Quarterly",
+            "ANNUAL": "Annual",
+            "LOCKED": "Locked up / no redemptions"
+          }
+        },
+        {
+          "logical_name": "Redemption Notice Days",
+          "physical_name": "redemption_notice_days",
+          "graphql_name": null,
+          "data_type": "INT",
+          "description": "Number of days notice required for redemptions",
+          "synonyms": ["notice period", "redemption notice"]
+        },
+        {
+          "logical_name": "Lockup Period",
+          "physical_name": "lockup_period_months",
+          "graphql_name": null,
+          "data_type": "INT",
+          "description": "Initial lockup period in months during which redemptions are not allowed",
+          "synonyms": ["lockup", "lock-up period", "commitment period"]
+        },
+        {
+          "logical_name": "Domicile",
+          "physical_name": "domicile_country",
+          "graphql_name": "domicileCountry",
+          "data_type": "VARCHAR(3)",
+          "description": "Country where the fund is legally domiciled",
+          "synonyms": ["domicile", "jurisdiction", "country of registration"]
+        },
+        {
+          "logical_name": "Regulatory Framework",
+          "physical_name": "regulatory_framework",
+          "graphql_name": "regulatoryFramework",
+          "data_type": "VARCHAR(10)",
+          "description": "Regulatory regime the fund operates under",
+          "synonyms": ["regulation", "framework", "fund regulation"],
+          "value_dictionary": {
+            "UCITS": "EU UCITS directive",
+            "AIF": "EU Alternative Investment Fund",
+            "40ACT": "US Investment Company Act of 1940",
+            "REG_D": "US Regulation D (private placement)",
+            "MAS": "Singapore MAS regulated",
+            "SFC": "Hong Kong SFC authorized",
+            "UNREG": "Unregulated / offshore"
+          }
+        },
+        {
+          "logical_name": "Fund Status",
+          "physical_name": "fund_status",
+          "graphql_name": "fundStatus",
+          "data_type": "VARCHAR(5)",
+          "description": "Current operational status of the fund",
+          "synonyms": ["status", "fund state"],
+          "value_dictionary": {
+            "A": "Active - open and operating",
+            "S": "Soft-closed - closed to new investors, existing can add",
+            "H": "Hard-closed - no new subscriptions",
+            "L": "Liquidating - in wind-down",
+            "T": "Terminated - fully wound down"
+          }
+        }
+      ],
+      "business_rules": [
+        {
+          "rule_name": "Active Fund",
+          "description": "A fund that is currently operating and not in wind-down",
+          "sql_predicate": "fund_status IN ('A', 'S', 'H') AND termination_date IS NULL",
+          "graphql_filter": "fundStatus_in: [\"A\", \"S\", \"H\"]"
+        },
+        {
+          "rule_name": "Open Fund",
+          "description": "A fund that is accepting new subscriptions",
+          "sql_predicate": "fund_status = 'A' AND subscription_frequency != 'CLOSED'",
+          "graphql_filter": "fundStatus: \"A\""
+        },
+        {
+          "rule_name": "Hedge Fund",
+          "description": "Funds classified as hedge funds (typically with performance fees and lockups)",
+          "sql_predicate": "fund_type_code = 'HEDGE'",
+          "graphql_filter": "fundTypeCode: \"HEDGE\""
+        },
+        {
+          "rule_name": "Large Fund",
+          "description": "Funds with AUM greater than 1 billion in base currency",
+          "sql_predicate": "total_aum >= 1000000000"
+        },
+        {
+          "rule_name": "UCITS Fund",
+          "description": "Funds compliant with the EU UCITS directive",
+          "sql_predicate": "regulatory_framework = 'UCITS'",
+          "graphql_filter": "regulatoryFramework: \"UCITS\""
+        }
+      ],
+      "query_examples": [
+        {
+          "question": "List all active equity hedge funds",
+          "query_type": "sql",
+          "query": "SELECT fund_id, fund_name, investment_strategy, total_aum, base_currency, nav_per_unit\nFROM fund_master\nWHERE fund_status IN ('A', 'S', 'H')\n  AND termination_date IS NULL\n  AND fund_type_code = 'HEDGE'\n  AND asset_class_focus = 'EQ'\nORDER BY total_aum DESC;"
+        },
+        {
+          "question": "What is the total AUM across all active funds?",
+          "query_type": "sql",
+          "query": "SELECT SUM(total_aum) AS total_aum, base_currency, COUNT(*) AS fund_count\nFROM fund_master\nWHERE fund_status IN ('A', 'S', 'H')\n  AND termination_date IS NULL\nGROUP BY base_currency\nORDER BY total_aum DESC;"
+        },
+        {
+          "question": "Show me funds managed by portfolio manager X with their performance fees",
+          "query_type": "sql",
+          "query": "SELECT fund_id, fund_name, fund_type_code, investment_strategy, total_aum,\n  management_fee_bps, performance_fee_pct, high_water_mark, hurdle_rate\nFROM fund_master\nWHERE portfolio_manager_id = :pm_id\n  AND fund_status IN ('A', 'S', 'H')\nORDER BY total_aum DESC;"
+        },
+        {
+          "question": "Which UCITS funds have monthly redemptions?",
+          "query_type": "sql",
+          "query": "SELECT fund_id, fund_name, redemption_frequency, redemption_notice_days, total_aum\nFROM fund_master\nWHERE regulatory_framework = 'UCITS'\n  AND redemption_frequency = 'MONTHLY'\n  AND fund_status IN ('A', 'S', 'H')\nORDER BY fund_name;"
+        },
+        {
+          "question": "List funds with lockup periods greater than 12 months",
+          "query_type": "sql",
+          "query": "SELECT fund_id, fund_name, fund_type_code, lockup_period_months, redemption_frequency, total_aum\nFROM fund_master\nWHERE lockup_period_months > 12\n  AND fund_status IN ('A', 'S', 'H')\nORDER BY lockup_period_months DESC;"
+        }
+      ]
+    },
+    {
+      "product_id": "benchmark_data",
+      "name": "Benchmark Data",
+      "domain": "Asset Management",
+      "subdomain": "Benchmarks",
+      "description": "Index and benchmark data used for performance measurement, attribution, and mandate compliance. Includes major equity, fixed income, and multi-asset benchmarks from providers like MSCI, S&P, FTSE, and Bloomberg. Contains daily returns, constituent weights, and index levels.",
+      "distribution_type": "datamesh",
+      "schema_sql": "CREATE TABLE benchmark_data (\n  benchmark_id VARCHAR(20),\n  benchmark_name VARCHAR(200),\n  benchmark_provider VARCHAR(20),\n  benchmark_type VARCHAR(10),\n  return_date DATE,\n  index_level DECIMAL(18,6),\n  daily_return DECIMAL(12,8),\n  mtd_return DECIMAL(12,8),\n  qtd_return DECIMAL(12,8),\n  ytd_return DECIMAL(12,8),\n  one_year_return DECIMAL(12,8),\n  three_year_annualized DECIMAL(12,8),\n  five_year_annualized DECIMAL(12,8),\n  volatility_1y DECIMAL(12,8),\n  sharpe_ratio_1y DECIMAL(12,8),\n  constituent_count INT,\n  base_currency VARCHAR(3),\n  PRIMARY KEY (benchmark_id, return_date)\n);",
+      "schema_graphql": null,
+      "attributes": [
+        {
+          "logical_name": "Benchmark ID",
+          "physical_name": "benchmark_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Unique identifier for the benchmark index",
+          "synonyms": ["index id", "benchmark identifier", "index code"],
+          "is_primary_key": true
+        },
+        {
+          "logical_name": "Benchmark Name",
+          "physical_name": "benchmark_name",
+          "data_type": "VARCHAR(200)",
+          "description": "Full name of the benchmark index",
+          "synonyms": ["index name", "benchmark", "index"]
+        },
+        {
+          "logical_name": "Benchmark Provider",
+          "physical_name": "benchmark_provider",
+          "data_type": "VARCHAR(20)",
+          "description": "Data provider or publisher of the benchmark",
+          "synonyms": ["provider", "index provider", "publisher"],
+          "value_dictionary": {
+            "MSCI": "MSCI Inc.",
+            "SP": "S&P Dow Jones Indices",
+            "FTSE": "FTSE Russell",
+            "BLOOMBERG": "Bloomberg Index Services",
+            "RUSSELL": "Russell Investments",
+            "BARCLAYS": "Bloomberg Barclays (legacy)"
+          }
+        },
+        {
+          "logical_name": "Benchmark Type",
+          "physical_name": "benchmark_type",
+          "data_type": "VARCHAR(10)",
+          "description": "Asset class classification of the benchmark",
+          "synonyms": ["index type", "asset class"],
+          "value_dictionary": {
+            "EQ": "Equity index",
+            "FI": "Fixed income index",
+            "MULTI": "Multi-asset index",
+            "CMDTY": "Commodity index",
+            "RE": "Real estate index",
+            "HF": "Hedge fund index"
+          }
+        },
+        {
+          "logical_name": "Return Date",
+          "physical_name": "return_date",
+          "data_type": "DATE",
+          "description": "Business date for the return observation",
+          "synonyms": ["date", "as of date", "observation date"]
+        },
+        {
+          "logical_name": "Index Level",
+          "physical_name": "index_level",
+          "data_type": "DECIMAL(18,6)",
+          "description": "Absolute index level / value on this date",
+          "synonyms": ["level", "index value", "index price"]
+        },
+        {
+          "logical_name": "Daily Return",
+          "physical_name": "daily_return",
+          "data_type": "DECIMAL(12,8)",
+          "description": "One-day total return of the index (e.g., 0.0125 = 1.25%)",
+          "synonyms": ["daily performance", "1d return", "day return"]
+        },
+        {
+          "logical_name": "MTD Return",
+          "physical_name": "mtd_return",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Month-to-date cumulative return",
+          "synonyms": ["month to date", "MTD", "monthly return so far"]
+        },
+        {
+          "logical_name": "QTD Return",
+          "physical_name": "qtd_return",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Quarter-to-date cumulative return",
+          "synonyms": ["quarter to date", "QTD"]
+        },
+        {
+          "logical_name": "YTD Return",
+          "physical_name": "ytd_return",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Year-to-date cumulative return",
+          "synonyms": ["year to date", "YTD"]
+        },
+        {
+          "logical_name": "1Y Return",
+          "physical_name": "one_year_return",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Trailing one-year total return",
+          "synonyms": ["one year return", "12 month return", "annual return"]
+        },
+        {
+          "logical_name": "3Y Annualized Return",
+          "physical_name": "three_year_annualized",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Trailing three-year annualized return",
+          "synonyms": ["3 year return", "3y annualized"]
+        },
+        {
+          "logical_name": "5Y Annualized Return",
+          "physical_name": "five_year_annualized",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Trailing five-year annualized return",
+          "synonyms": ["5 year return", "5y annualized"]
+        },
+        {
+          "logical_name": "1Y Volatility",
+          "physical_name": "volatility_1y",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Trailing one-year annualized volatility (standard deviation of returns)",
+          "synonyms": ["volatility", "vol", "risk", "standard deviation"]
+        },
+        {
+          "logical_name": "1Y Sharpe Ratio",
+          "physical_name": "sharpe_ratio_1y",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Trailing one-year Sharpe ratio (excess return / volatility)",
+          "synonyms": ["sharpe", "sharpe ratio", "risk adjusted return"]
+        },
+        {
+          "logical_name": "Constituent Count",
+          "physical_name": "constituent_count",
+          "data_type": "INT",
+          "description": "Number of securities in the index",
+          "synonyms": ["number of holdings", "members", "constituents"]
+        },
+        {
+          "logical_name": "Base Currency",
+          "physical_name": "base_currency",
+          "data_type": "VARCHAR(3)",
+          "description": "Currency in which index returns are calculated",
+          "synonyms": ["currency", "index currency"]
+        }
+      ],
+      "business_rules": [
+        {
+          "rule_name": "Latest Benchmark Return",
+          "description": "Most recent available return date for a benchmark",
+          "sql_predicate": "return_date = (SELECT MAX(return_date) FROM benchmark_data bd2 WHERE bd2.benchmark_id = benchmark_data.benchmark_id)"
+        },
+        {
+          "rule_name": "Equity Benchmark",
+          "description": "Equity market benchmarks only",
+          "sql_predicate": "benchmark_type = 'EQ'"
+        },
+        {
+          "rule_name": "Fixed Income Benchmark",
+          "description": "Fixed income / bond benchmarks only",
+          "sql_predicate": "benchmark_type = 'FI'"
+        }
+      ],
+      "query_examples": [
+        {
+          "question": "What is the YTD return for the S&P 500?",
+          "query_type": "sql",
+          "query": "SELECT benchmark_id, benchmark_name, return_date, ytd_return, one_year_return, index_level\nFROM benchmark_data\nWHERE benchmark_name ILIKE '%S&P 500%'\n  AND return_date = (SELECT MAX(return_date) FROM benchmark_data WHERE benchmark_name ILIKE '%S&P 500%');"
+        },
+        {
+          "question": "Compare returns across all equity benchmarks MTD",
+          "query_type": "sql",
+          "query": "SELECT benchmark_id, benchmark_name, benchmark_provider, return_date, mtd_return, ytd_return\nFROM benchmark_data\nWHERE benchmark_type = 'EQ'\n  AND return_date = (SELECT MAX(return_date) FROM benchmark_data WHERE benchmark_type = 'EQ')\nORDER BY mtd_return DESC;"
+        },
+        {
+          "question": "Show me the 3-year and 5-year annualized returns for MSCI benchmarks",
+          "query_type": "sql",
+          "query": "SELECT benchmark_id, benchmark_name, return_date, three_year_annualized, five_year_annualized, volatility_1y, sharpe_ratio_1y\nFROM benchmark_data\nWHERE benchmark_provider = 'MSCI'\n  AND return_date = (SELECT MAX(return_date) FROM benchmark_data WHERE benchmark_provider = 'MSCI')\nORDER BY five_year_annualized DESC;"
+        },
+        {
+          "question": "Which benchmark had the best risk-adjusted return this year?",
+          "query_type": "sql",
+          "query": "SELECT benchmark_id, benchmark_name, benchmark_type, ytd_return, volatility_1y, sharpe_ratio_1y\nFROM benchmark_data\nWHERE return_date = (SELECT MAX(return_date) FROM benchmark_data)\n  AND sharpe_ratio_1y IS NOT NULL\nORDER BY sharpe_ratio_1y DESC\nLIMIT 10;"
+        }
+      ]
+    },
+    {
+      "product_id": "corporate_actions",
+      "name": "Corporate Actions",
+      "domain": "Capital Markets",
+      "subdomain": "Events",
+      "description": "Record of all corporate action events affecting instruments including dividends, stock splits, mergers, acquisitions, rights issues, spin-offs, and coupon payments. Tracks announcement, ex-date, record date, and payment date lifecycle.",
+      "distribution_type": "datamesh",
+      "schema_sql": "CREATE TABLE corporate_actions (\n  action_id VARCHAR(30) PRIMARY KEY,\n  instrument_id VARCHAR(20),\n  action_type VARCHAR(15),\n  announcement_date DATE,\n  ex_date DATE,\n  record_date DATE,\n  pay_date DATE,\n  effective_date DATE,\n  gross_amount DECIMAL(18,6),\n  net_amount DECIMAL(18,6),\n  tax_rate DECIMAL(8,4),\n  currency_code VARCHAR(3),\n  split_ratio_from INT,\n  split_ratio_to INT,\n  action_status VARCHAR(10),\n  description VARCHAR(500),\n  created_date TIMESTAMP,\n  last_updated_date TIMESTAMP\n);",
+      "schema_graphql": null,
+      "attributes": [
+        {
+          "logical_name": "Action ID",
+          "physical_name": "action_id",
+          "data_type": "VARCHAR(30)",
+          "description": "Unique identifier for the corporate action event",
+          "synonyms": ["event id", "corporate action id", "CA id"],
+          "is_primary_key": true
+        },
+        {
+          "logical_name": "Instrument ID",
+          "physical_name": "instrument_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Instrument affected by this corporate action, references instrument_master.instrument_id",
+          "synonyms": ["security id", "instrument"],
+          "foreign_key": "instrument_master.instrument_id"
+        },
+        {
+          "logical_name": "Action Type",
+          "physical_name": "action_type",
+          "data_type": "VARCHAR(15)",
+          "description": "Type of corporate action event",
+          "synonyms": ["event type", "CA type", "type"],
+          "value_dictionary": {
+            "CASH_DIV": "Cash dividend payment",
+            "STOCK_DIV": "Stock/scrip dividend",
+            "SPLIT": "Stock split (forward or reverse)",
+            "MERGER": "Merger or acquisition",
+            "SPINOFF": "Spin-off of subsidiary",
+            "RIGHTS": "Rights issue / offering",
+            "TENDER": "Tender offer / buyback",
+            "COUPON": "Bond coupon payment",
+            "CALL": "Bond call / early redemption",
+            "EXCHANGE": "Security exchange / conversion"
+          }
+        },
+        {
+          "logical_name": "Announcement Date",
+          "physical_name": "announcement_date",
+          "data_type": "DATE",
+          "description": "Date the corporate action was publicly announced",
+          "synonyms": ["declared date", "announcement", "declaration date"]
+        },
+        {
+          "logical_name": "Ex-Date",
+          "physical_name": "ex_date",
+          "data_type": "DATE",
+          "description": "Date on or after which the security trades without the entitlement",
+          "synonyms": ["ex date", "ex-dividend date", "ex-coupon date"]
+        },
+        {
+          "logical_name": "Record Date",
+          "physical_name": "record_date",
+          "data_type": "DATE",
+          "description": "Date on which holders of record are identified for the entitlement",
+          "synonyms": ["record date", "holder date"]
+        },
+        {
+          "logical_name": "Pay Date",
+          "physical_name": "pay_date",
+          "data_type": "DATE",
+          "description": "Date on which the cash or stock entitlement is paid/delivered",
+          "synonyms": ["payment date", "distribution date", "pay date"]
+        },
+        {
+          "logical_name": "Effective Date",
+          "physical_name": "effective_date",
+          "data_type": "DATE",
+          "description": "Date the corporate action takes effect (e.g., split effective date, merger completion)",
+          "synonyms": ["effective", "completion date"]
+        },
+        {
+          "logical_name": "Gross Amount",
+          "physical_name": "gross_amount",
+          "data_type": "DECIMAL(18,6)",
+          "description": "Gross amount per share/unit before tax withholding",
+          "synonyms": ["gross dividend", "gross payment", "amount per share"]
+        },
+        {
+          "logical_name": "Net Amount",
+          "physical_name": "net_amount",
+          "data_type": "DECIMAL(18,6)",
+          "description": "Net amount per share/unit after tax withholding",
+          "synonyms": ["net dividend", "net payment"]
+        },
+        {
+          "logical_name": "Tax Rate",
+          "physical_name": "tax_rate",
+          "data_type": "DECIMAL(8,4)",
+          "description": "Withholding tax rate applied (e.g., 0.30 = 30%)",
+          "synonyms": ["withholding tax", "WHT rate", "tax"]
+        },
+        {
+          "logical_name": "Currency",
+          "physical_name": "currency_code",
+          "data_type": "VARCHAR(3)",
+          "description": "Currency of the payment amount",
+          "synonyms": ["payment currency", "dividend currency", "ccy"]
+        },
+        {
+          "logical_name": "Split Ratio From",
+          "physical_name": "split_ratio_from",
+          "data_type": "INT",
+          "description": "For stock splits, the original number of shares (e.g., 1 in a 1:4 split)",
+          "synonyms": ["split from", "old shares"]
+        },
+        {
+          "logical_name": "Split Ratio To",
+          "physical_name": "split_ratio_to",
+          "data_type": "INT",
+          "description": "For stock splits, the new number of shares (e.g., 4 in a 1:4 split)",
+          "synonyms": ["split to", "new shares"]
+        },
+        {
+          "logical_name": "Action Status",
+          "physical_name": "action_status",
+          "data_type": "VARCHAR(10)",
+          "description": "Current lifecycle status of the corporate action",
+          "synonyms": ["status", "event status", "CA status"],
+          "value_dictionary": {
+            "ANNOUNCED": "Publicly announced, not yet confirmed",
+            "CONFIRMED": "Confirmed by issuer/agent",
+            "EX": "Past ex-date, awaiting payment",
+            "PAID": "Fully paid/settled",
+            "CANCELLED": "Cancelled or withdrawn",
+            "AMENDED": "Terms have been amended"
+          }
+        },
+        {
+          "logical_name": "Description",
+          "physical_name": "description",
+          "data_type": "VARCHAR(500)",
+          "description": "Free-text description of the corporate action details",
+          "synonyms": ["details", "notes", "narrative"]
+        }
+      ],
+      "business_rules": [
+        {
+          "rule_name": "Upcoming Dividends",
+          "description": "Dividends that have been announced but not yet paid",
+          "sql_predicate": "action_type IN ('CASH_DIV', 'STOCK_DIV') AND action_status IN ('ANNOUNCED', 'CONFIRMED', 'EX') AND pay_date >= CURRENT_DATE()"
+        },
+        {
+          "rule_name": "Upcoming Ex-Dates",
+          "description": "Corporate actions with future ex-dates that will affect positions",
+          "sql_predicate": "ex_date >= CURRENT_DATE() AND action_status IN ('ANNOUNCED', 'CONFIRMED')"
+        },
+        {
+          "rule_name": "Completed Actions",
+          "description": "Corporate actions that have been fully processed",
+          "sql_predicate": "action_status = 'PAID'"
+        },
+        {
+          "rule_name": "Cash Dividend",
+          "description": "Cash dividend payments only",
+          "sql_predicate": "action_type = 'CASH_DIV'"
+        },
+        {
+          "rule_name": "Stock Split",
+          "description": "Stock split events only",
+          "sql_predicate": "action_type = 'SPLIT'"
+        }
+      ],
+      "query_examples": [
+        {
+          "question": "Show me upcoming dividend payments for my instruments",
+          "query_type": "sql",
+          "query": "SELECT ca.action_id, ca.instrument_id, ca.action_type, ca.ex_date, ca.pay_date,\n  ca.gross_amount, ca.net_amount, ca.currency_code, ca.action_status\nFROM corporate_actions ca\nWHERE ca.action_type IN ('CASH_DIV', 'STOCK_DIV')\n  AND ca.action_status IN ('ANNOUNCED', 'CONFIRMED', 'EX')\n  AND ca.pay_date >= CURRENT_DATE()\nORDER BY ca.ex_date;"
+        },
+        {
+          "question": "What dividends were paid on instrument X in the last year?",
+          "query_type": "sql",
+          "query": "SELECT action_id, ex_date, pay_date, gross_amount, net_amount, tax_rate, currency_code\nFROM corporate_actions\nWHERE instrument_id = :instrument_id\n  AND action_type = 'CASH_DIV'\n  AND action_status = 'PAID'\n  AND pay_date >= DATEADD(year, -1, CURRENT_DATE())\nORDER BY pay_date DESC;"
+        },
+        {
+          "question": "Were there any stock splits this year?",
+          "query_type": "sql",
+          "query": "SELECT ca.action_id, ca.instrument_id, i.instrument_name,\n  ca.split_ratio_from, ca.split_ratio_to, ca.effective_date, ca.action_status\nFROM corporate_actions ca\nJOIN instrument_master i ON ca.instrument_id = i.instrument_id\nWHERE ca.action_type = 'SPLIT'\n  AND ca.effective_date >= DATE_TRUNC('year', CURRENT_DATE())\nORDER BY ca.effective_date DESC;"
+        },
+        {
+          "question": "Show me the total dividend income by instrument this year",
+          "query_type": "sql",
+          "query": "SELECT instrument_id, COUNT(*) AS dividend_count,\n  SUM(gross_amount) AS total_gross, SUM(net_amount) AS total_net, currency_code\nFROM corporate_actions\nWHERE action_type = 'CASH_DIV'\n  AND action_status = 'PAID'\n  AND pay_date >= DATE_TRUNC('year', CURRENT_DATE())\nGROUP BY instrument_id, currency_code\nORDER BY total_gross DESC;"
+        },
+        {
+          "question": "What corporate actions are coming up next month?",
+          "query_type": "sql",
+          "query": "SELECT action_id, instrument_id, action_type, ex_date, pay_date, effective_date,\n  gross_amount, currency_code, action_status, description\nFROM corporate_actions\nWHERE action_status IN ('ANNOUNCED', 'CONFIRMED')\n  AND ex_date BETWEEN CURRENT_DATE() AND DATEADD(month, 1, CURRENT_DATE())\nORDER BY ex_date;"
+        }
+      ]
+    },
+    {
+      "product_id": "performance_data",
+      "name": "Performance Data",
+      "domain": "Asset Management",
+      "subdomain": "Performance",
+      "description": "Fund and portfolio performance returns, attribution analysis, and benchmark comparison. Contains time-weighted and money-weighted returns at daily, monthly, and annual frequency. Includes Brinson-style performance attribution decomposition into allocation, selection, and interaction effects.",
+      "distribution_type": "datamesh",
+      "schema_sql": "CREATE TABLE performance_data (\n  fund_id VARCHAR(20),\n  return_date DATE,\n  return_frequency VARCHAR(10),\n  gross_return DECIMAL(12,8),\n  net_return DECIMAL(12,8),\n  benchmark_return DECIMAL(12,8),\n  excess_return DECIMAL(12,8),\n  mtd_gross_return DECIMAL(12,8),\n  qtd_gross_return DECIMAL(12,8),\n  ytd_gross_return DECIMAL(12,8),\n  since_inception_annualized DECIMAL(12,8),\n  allocation_effect DECIMAL(12,8),\n  selection_effect DECIMAL(12,8),\n  interaction_effect DECIMAL(12,8),\n  currency_effect DECIMAL(12,8),\n  total_active_return DECIMAL(12,8),\n  tracking_error DECIMAL(12,8),\n  information_ratio DECIMAL(12,8),\n  sharpe_ratio DECIMAL(12,8),\n  max_drawdown DECIMAL(12,8),\n  PRIMARY KEY (fund_id, return_date, return_frequency)\n);",
+      "schema_graphql": null,
+      "attributes": [
+        {
+          "logical_name": "Fund ID",
+          "physical_name": "fund_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Fund or portfolio for which performance is calculated, references fund_master.fund_id",
+          "synonyms": ["portfolio id", "fund", "vehicle"],
+          "foreign_key": "fund_master.fund_id"
+        },
+        {
+          "logical_name": "Return Date",
+          "physical_name": "return_date",
+          "data_type": "DATE",
+          "description": "Date of the performance observation",
+          "synonyms": ["date", "as of date", "performance date"]
+        },
+        {
+          "logical_name": "Return Frequency",
+          "physical_name": "return_frequency",
+          "data_type": "VARCHAR(10)",
+          "description": "Frequency of the return observation",
+          "synonyms": ["frequency", "periodicity"],
+          "value_dictionary": {
+            "DAILY": "Daily return",
+            "MONTHLY": "Monthly return",
+            "QUARTERLY": "Quarterly return",
+            "ANNUAL": "Annual return"
+          }
+        },
+        {
+          "logical_name": "Gross Return",
+          "physical_name": "gross_return",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Period return before management and performance fees",
+          "synonyms": ["gross performance", "gross", "return before fees"]
+        },
+        {
+          "logical_name": "Net Return",
+          "physical_name": "net_return",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Period return after all fees and expenses",
+          "synonyms": ["net performance", "net", "return after fees"]
+        },
+        {
+          "logical_name": "Benchmark Return",
+          "physical_name": "benchmark_return",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Return of the fund's benchmark index over the same period",
+          "synonyms": ["index return", "benchmark", "BM return"]
+        },
+        {
+          "logical_name": "Excess Return",
+          "physical_name": "excess_return",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Fund return minus benchmark return (gross_return - benchmark_return)",
+          "synonyms": ["alpha", "outperformance", "active return", "relative return"]
+        },
+        {
+          "logical_name": "MTD Gross Return",
+          "physical_name": "mtd_gross_return",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Month-to-date cumulative gross return",
+          "synonyms": ["month to date", "MTD"]
+        },
+        {
+          "logical_name": "QTD Gross Return",
+          "physical_name": "qtd_gross_return",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Quarter-to-date cumulative gross return",
+          "synonyms": ["quarter to date", "QTD"]
+        },
+        {
+          "logical_name": "YTD Gross Return",
+          "physical_name": "ytd_gross_return",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Year-to-date cumulative gross return",
+          "synonyms": ["year to date", "YTD"]
+        },
+        {
+          "logical_name": "Since Inception Return",
+          "physical_name": "since_inception_annualized",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Annualized return since fund inception",
+          "synonyms": ["since inception", "SI return", "inception return"]
+        },
+        {
+          "logical_name": "Allocation Effect",
+          "physical_name": "allocation_effect",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Performance attribution: return due to sector/asset allocation decisions vs benchmark",
+          "synonyms": ["allocation", "asset allocation effect"]
+        },
+        {
+          "logical_name": "Selection Effect",
+          "physical_name": "selection_effect",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Performance attribution: return due to security selection within sectors",
+          "synonyms": ["selection", "stock selection effect", "security selection"]
+        },
+        {
+          "logical_name": "Interaction Effect",
+          "physical_name": "interaction_effect",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Performance attribution: combined allocation and selection interaction effect",
+          "synonyms": ["interaction", "cross effect"]
+        },
+        {
+          "logical_name": "Currency Effect",
+          "physical_name": "currency_effect",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Performance attribution: return due to currency movements",
+          "synonyms": ["FX effect", "currency contribution", "currency impact"]
+        },
+        {
+          "logical_name": "Tracking Error",
+          "physical_name": "tracking_error",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Annualized standard deviation of excess returns vs benchmark",
+          "synonyms": ["TE", "tracking error", "active risk"]
+        },
+        {
+          "logical_name": "Information Ratio",
+          "physical_name": "information_ratio",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Excess return divided by tracking error — measures risk-adjusted active return",
+          "synonyms": ["IR", "information ratio"]
+        },
+        {
+          "logical_name": "Sharpe Ratio",
+          "physical_name": "sharpe_ratio",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Risk-adjusted return: (return - risk-free rate) / volatility",
+          "synonyms": ["sharpe", "risk adjusted return"]
+        },
+        {
+          "logical_name": "Max Drawdown",
+          "physical_name": "max_drawdown",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Maximum peak-to-trough decline over the trailing period",
+          "synonyms": ["drawdown", "max DD", "worst drawdown"]
+        }
+      ],
+      "business_rules": [
+        {
+          "rule_name": "Latest Performance",
+          "description": "Most recent available performance data for a fund",
+          "sql_predicate": "return_date = (SELECT MAX(return_date) FROM performance_data pd2 WHERE pd2.fund_id = performance_data.fund_id AND pd2.return_frequency = performance_data.return_frequency)"
+        },
+        {
+          "rule_name": "Monthly Returns",
+          "description": "When users ask for 'performance' or 'returns' without specifying frequency, default to monthly",
+          "sql_predicate": "return_frequency = 'MONTHLY'"
+        },
+        {
+          "rule_name": "Outperforming Funds",
+          "description": "Funds with positive excess return vs benchmark",
+          "sql_predicate": "excess_return > 0"
+        },
+        {
+          "rule_name": "Underperforming Funds",
+          "description": "Funds with negative excess return vs benchmark",
+          "sql_predicate": "excess_return < 0"
+        }
+      ],
+      "query_examples": [
+        {
+          "question": "What is the YTD performance for fund X?",
+          "query_type": "sql",
+          "query": "SELECT fund_id, return_date, ytd_gross_return, benchmark_return, excess_return, sharpe_ratio\nFROM performance_data\nWHERE fund_id = :fund_id\n  AND return_frequency = 'MONTHLY'\n  AND return_date = (SELECT MAX(return_date) FROM performance_data WHERE fund_id = :fund_id AND return_frequency = 'MONTHLY');"
+        },
+        {
+          "question": "Which funds are outperforming their benchmark this year?",
+          "query_type": "sql",
+          "query": "SELECT p.fund_id, f.fund_name, p.ytd_gross_return, p.benchmark_return, p.excess_return, p.information_ratio\nFROM performance_data p\nJOIN fund_master f ON p.fund_id = f.fund_id\nWHERE p.return_frequency = 'MONTHLY'\n  AND p.return_date = (SELECT MAX(return_date) FROM performance_data WHERE return_frequency = 'MONTHLY')\n  AND p.excess_return > 0\n  AND f.fund_status IN ('A', 'S', 'H')\nORDER BY p.excess_return DESC;"
+        },
+        {
+          "question": "Show me the performance attribution breakdown for fund Y",
+          "query_type": "sql",
+          "query": "SELECT fund_id, return_date, gross_return, benchmark_return, excess_return,\n  allocation_effect, selection_effect, interaction_effect, currency_effect\nFROM performance_data\nWHERE fund_id = :fund_id\n  AND return_frequency = 'MONTHLY'\n  AND return_date >= DATEADD(month, -12, CURRENT_DATE())\nORDER BY return_date;"
+        },
+        {
+          "question": "What are the top 5 funds by Sharpe ratio?",
+          "query_type": "sql",
+          "query": "SELECT p.fund_id, f.fund_name, p.since_inception_annualized, p.sharpe_ratio, p.max_drawdown, p.tracking_error\nFROM performance_data p\nJOIN fund_master f ON p.fund_id = f.fund_id\nWHERE p.return_frequency = 'MONTHLY'\n  AND p.return_date = (SELECT MAX(return_date) FROM performance_data WHERE return_frequency = 'MONTHLY')\n  AND p.sharpe_ratio IS NOT NULL\n  AND f.fund_status IN ('A', 'S', 'H')\nORDER BY p.sharpe_ratio DESC\nLIMIT 5;"
+        },
+        {
+          "question": "Show monthly returns for fund Z over the last 12 months",
+          "query_type": "sql",
+          "query": "SELECT fund_id, return_date, gross_return, net_return, benchmark_return, excess_return\nFROM performance_data\nWHERE fund_id = :fund_id\n  AND return_frequency = 'MONTHLY'\n  AND return_date >= DATEADD(month, -12, CURRENT_DATE())\nORDER BY return_date;"
+        }
+      ]
+    },
+    {
+      "product_id": "risk_analytics",
+      "name": "Risk Analytics",
+      "domain": "Asset Management",
+      "subdomain": "Risk",
+      "description": "Risk metrics and analytics computed at fund, account, and instrument level. Includes Value at Risk (VaR), Expected Shortfall (CVaR), factor exposures, Greeks for derivatives, duration and convexity for fixed income, and portfolio-level risk decomposition. Computed daily by the risk engine.",
+      "distribution_type": "datamesh",
+      "schema_sql": "CREATE TABLE risk_analytics (\n  risk_id VARCHAR(30) PRIMARY KEY,\n  entity_type VARCHAR(10),\n  entity_id VARCHAR(20),\n  risk_date DATE,\n  var_95_1d DECIMAL(18,2),\n  var_99_1d DECIMAL(18,2),\n  cvar_95_1d DECIMAL(18,2),\n  var_95_10d DECIMAL(18,2),\n  beta DECIMAL(12,6),\n  alpha_annualized DECIMAL(12,6),\n  sharpe_ratio DECIMAL(12,6),\n  sortino_ratio DECIMAL(12,6),\n  volatility_annualized DECIMAL(12,8),\n  tracking_error DECIMAL(12,8),\n  max_drawdown DECIMAL(12,8),\n  duration DECIMAL(12,6),\n  modified_duration DECIMAL(12,6),\n  convexity DECIMAL(12,6),\n  dv01 DECIMAL(18,2),\n  delta DECIMAL(12,6),\n  gamma DECIMAL(12,6),\n  vega DECIMAL(12,6),\n  theta DECIMAL(12,6),\n  concentration_top10_pct DECIMAL(8,4),\n  sector_concentration_pct DECIMAL(8,4),\n  currency_code VARCHAR(3),\n  created_date TIMESTAMP\n);",
+      "schema_graphql": null,
+      "attributes": [
+        {
+          "logical_name": "Risk ID",
+          "physical_name": "risk_id",
+          "data_type": "VARCHAR(30)",
+          "description": "Unique identifier for the risk record",
+          "synonyms": ["risk record id"],
+          "is_primary_key": true
+        },
+        {
+          "logical_name": "Entity Type",
+          "physical_name": "entity_type",
+          "data_type": "VARCHAR(10)",
+          "description": "Type of entity the risk is computed for",
+          "synonyms": ["level", "risk level"],
+          "value_dictionary": {
+            "FUND": "Fund-level risk",
+            "ACCOUNT": "Account-level risk",
+            "INSTR": "Instrument-level risk",
+            "SECTOR": "Sector-level risk aggregation"
+          }
+        },
+        {
+          "logical_name": "Entity ID",
+          "physical_name": "entity_id",
+          "data_type": "VARCHAR(20)",
+          "description": "Identifier of the fund, account, or instrument being measured",
+          "synonyms": ["fund id", "account id", "instrument id"]
+        },
+        {
+          "logical_name": "Risk Date",
+          "physical_name": "risk_date",
+          "data_type": "DATE",
+          "description": "Date the risk metrics were computed",
+          "synonyms": ["date", "as of date", "calculation date"]
+        },
+        {
+          "logical_name": "VaR 95% 1-Day",
+          "physical_name": "var_95_1d",
+          "data_type": "DECIMAL(18,2)",
+          "description": "Value at Risk at 95% confidence level over 1-day horizon — maximum expected loss",
+          "synonyms": ["VaR", "value at risk", "95 VaR", "1-day VaR"]
+        },
+        {
+          "logical_name": "VaR 99% 1-Day",
+          "physical_name": "var_99_1d",
+          "data_type": "DECIMAL(18,2)",
+          "description": "Value at Risk at 99% confidence level over 1-day horizon",
+          "synonyms": ["99 VaR", "VaR 99"]
+        },
+        {
+          "logical_name": "CVaR 95% 1-Day",
+          "physical_name": "cvar_95_1d",
+          "data_type": "DECIMAL(18,2)",
+          "description": "Conditional VaR (Expected Shortfall) at 95% — average loss beyond VaR",
+          "synonyms": ["expected shortfall", "CVaR", "ES", "tail risk"]
+        },
+        {
+          "logical_name": "VaR 95% 10-Day",
+          "physical_name": "var_95_10d",
+          "data_type": "DECIMAL(18,2)",
+          "description": "Value at Risk at 95% confidence over 10-day horizon (regulatory capital)",
+          "synonyms": ["10-day VaR", "regulatory VaR"]
+        },
+        {
+          "logical_name": "Beta",
+          "physical_name": "beta",
+          "data_type": "DECIMAL(12,6)",
+          "description": "Sensitivity of returns to benchmark/market returns",
+          "synonyms": ["market beta", "beta coefficient"]
+        },
+        {
+          "logical_name": "Alpha",
+          "physical_name": "alpha_annualized",
+          "data_type": "DECIMAL(12,6)",
+          "description": "Annualized Jensen's alpha — excess return not explained by market exposure",
+          "synonyms": ["alpha", "Jensen's alpha", "excess return"]
+        },
+        {
+          "logical_name": "Sharpe Ratio",
+          "physical_name": "sharpe_ratio",
+          "data_type": "DECIMAL(12,6)",
+          "description": "Risk-adjusted return: (return - risk-free rate) / volatility",
+          "synonyms": ["sharpe", "risk adjusted return"]
+        },
+        {
+          "logical_name": "Sortino Ratio",
+          "physical_name": "sortino_ratio",
+          "data_type": "DECIMAL(12,6)",
+          "description": "Downside risk-adjusted return: (return - risk-free rate) / downside deviation",
+          "synonyms": ["sortino", "downside risk adjusted"]
+        },
+        {
+          "logical_name": "Volatility",
+          "physical_name": "volatility_annualized",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Annualized volatility (standard deviation of returns)",
+          "synonyms": ["vol", "standard deviation", "risk", "volatility"]
+        },
+        {
+          "logical_name": "Tracking Error",
+          "physical_name": "tracking_error",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Annualized standard deviation of excess returns vs benchmark",
+          "synonyms": ["TE", "active risk"]
+        },
+        {
+          "logical_name": "Max Drawdown",
+          "physical_name": "max_drawdown",
+          "data_type": "DECIMAL(12,8)",
+          "description": "Maximum peak-to-trough decline",
+          "synonyms": ["drawdown", "max DD", "worst drawdown"]
+        },
+        {
+          "logical_name": "Duration",
+          "physical_name": "duration",
+          "data_type": "DECIMAL(12,6)",
+          "description": "Macaulay duration for fixed income portfolios (weighted avg time to cash flows)",
+          "synonyms": ["Macaulay duration", "bond duration"]
+        },
+        {
+          "logical_name": "Modified Duration",
+          "physical_name": "modified_duration",
+          "data_type": "DECIMAL(12,6)",
+          "description": "Modified duration — price sensitivity to a 1% change in yield",
+          "synonyms": ["mod duration", "interest rate sensitivity"]
+        },
+        {
+          "logical_name": "Convexity",
+          "physical_name": "convexity",
+          "data_type": "DECIMAL(12,6)",
+          "description": "Second-order interest rate sensitivity for fixed income",
+          "synonyms": ["bond convexity"]
+        },
+        {
+          "logical_name": "DV01",
+          "physical_name": "dv01",
+          "data_type": "DECIMAL(18,2)",
+          "description": "Dollar value of a basis point — P&L from a 1bp yield change",
+          "synonyms": ["dollar duration", "PV01", "BPV", "basis point value"]
+        },
+        {
+          "logical_name": "Delta",
+          "physical_name": "delta",
+          "data_type": "DECIMAL(12,6)",
+          "description": "Option delta — rate of change of option price with respect to underlying",
+          "synonyms": ["option delta"]
+        },
+        {
+          "logical_name": "Gamma",
+          "physical_name": "gamma",
+          "data_type": "DECIMAL(12,6)",
+          "description": "Option gamma — rate of change of delta with respect to underlying",
+          "synonyms": ["option gamma"]
+        },
+        {
+          "logical_name": "Vega",
+          "physical_name": "vega",
+          "data_type": "DECIMAL(12,6)",
+          "description": "Option vega — sensitivity to a 1% change in implied volatility",
+          "synonyms": ["option vega", "vol sensitivity"]
+        },
+        {
+          "logical_name": "Theta",
+          "physical_name": "theta",
+          "data_type": "DECIMAL(12,6)",
+          "description": "Option theta — daily time decay",
+          "synonyms": ["option theta", "time decay"]
+        },
+        {
+          "logical_name": "Top 10 Concentration",
+          "physical_name": "concentration_top10_pct",
+          "data_type": "DECIMAL(8,4)",
+          "description": "Percentage of portfolio held in the top 10 positions",
+          "synonyms": ["concentration", "top 10 weight", "position concentration"]
+        },
+        {
+          "logical_name": "Currency",
+          "physical_name": "currency_code",
+          "data_type": "VARCHAR(3)",
+          "description": "Currency for monetary risk metrics (VaR, DV01)",
+          "synonyms": ["reporting currency", "risk currency"]
+        }
+      ],
+      "business_rules": [
+        {
+          "rule_name": "Latest Risk Metrics",
+          "description": "Most recent risk calculation date",
+          "sql_predicate": "risk_date = (SELECT MAX(risk_date) FROM risk_analytics)"
+        },
+        {
+          "rule_name": "Fund-Level Risk",
+          "description": "Risk metrics aggregated at the fund level",
+          "sql_predicate": "entity_type = 'FUND'"
+        },
+        {
+          "rule_name": "Instrument-Level Risk",
+          "description": "Risk metrics for individual instruments/positions",
+          "sql_predicate": "entity_type = 'INSTR'"
+        },
+        {
+          "rule_name": "High VaR Alert",
+          "description": "Entities where 1-day 95% VaR exceeds a threshold (flag for review)",
+          "sql_predicate": "var_95_1d > :threshold"
+        },
+        {
+          "rule_name": "High Concentration",
+          "description": "Portfolios where top 10 positions exceed 50% of the portfolio",
+          "sql_predicate": "concentration_top10_pct > 0.50 AND entity_type = 'FUND'"
+        }
+      ],
+      "query_examples": [
+        {
+          "question": "What is the VaR for fund X?",
+          "query_type": "sql",
+          "query": "SELECT entity_id, risk_date, var_95_1d, var_99_1d, cvar_95_1d, var_95_10d, currency_code\nFROM risk_analytics\nWHERE entity_id = :fund_id\n  AND entity_type = 'FUND'\n  AND risk_date = (SELECT MAX(risk_date) FROM risk_analytics WHERE entity_id = :fund_id AND entity_type = 'FUND');"
+        },
+        {
+          "question": "Which funds have the highest VaR right now?",
+          "query_type": "sql",
+          "query": "SELECT ra.entity_id, f.fund_name, ra.var_95_1d, ra.var_99_1d, ra.volatility_annualized, ra.currency_code\nFROM risk_analytics ra\nJOIN fund_master f ON ra.entity_id = f.fund_id\nWHERE ra.entity_type = 'FUND'\n  AND ra.risk_date = (SELECT MAX(risk_date) FROM risk_analytics WHERE entity_type = 'FUND')\n  AND f.fund_status IN ('A', 'S', 'H')\nORDER BY ra.var_95_1d DESC\nLIMIT 10;"
+        },
+        {
+          "question": "Show me the duration and DV01 for our fixed income funds",
+          "query_type": "sql",
+          "query": "SELECT ra.entity_id, f.fund_name, ra.duration, ra.modified_duration, ra.convexity, ra.dv01, ra.currency_code\nFROM risk_analytics ra\nJOIN fund_master f ON ra.entity_id = f.fund_id\nWHERE ra.entity_type = 'FUND'\n  AND ra.risk_date = (SELECT MAX(risk_date) FROM risk_analytics WHERE entity_type = 'FUND')\n  AND f.asset_class_focus = 'FI'\n  AND f.fund_status IN ('A', 'S', 'H')\nORDER BY ra.dv01 DESC;"
+        },
+        {
+          "question": "What are the Greeks for our options positions?",
+          "query_type": "sql",
+          "query": "SELECT entity_id AS instrument_id, risk_date, delta, gamma, vega, theta, currency_code\nFROM risk_analytics\nWHERE entity_type = 'INSTR'\n  AND risk_date = (SELECT MAX(risk_date) FROM risk_analytics WHERE entity_type = 'INSTR')\n  AND delta IS NOT NULL\nORDER BY ABS(delta) DESC;"
+        },
+        {
+          "question": "Which funds have the most concentrated portfolios?",
+          "query_type": "sql",
+          "query": "SELECT ra.entity_id, f.fund_name, ra.concentration_top10_pct, ra.volatility_annualized, ra.sharpe_ratio\nFROM risk_analytics ra\nJOIN fund_master f ON ra.entity_id = f.fund_id\nWHERE ra.entity_type = 'FUND'\n  AND ra.risk_date = (SELECT MAX(risk_date) FROM risk_analytics WHERE entity_type = 'FUND')\n  AND ra.concentration_top10_pct IS NOT NULL\n  AND f.fund_status IN ('A', 'S', 'H')\nORDER BY ra.concentration_top10_pct DESC;"
+        }
+      ]
+    }
+  ],
+  "cross_product_relationships": [
+    {
+      "from_product": "instrument_master",
+      "from_field": "issuer_party_id",
+      "to_product": "party_master",
+      "to_field": "party_id",
+      "description": "Instrument issuer links to party master"
+    },
+    {
+      "from_product": "market_data",
+      "from_field": "instrument_id",
+      "to_product": "instrument_master",
+      "to_field": "instrument_id",
+      "description": "Market data prices reference instruments"
+    },
+    {
+      "from_product": "trade_ledger",
+      "from_field": "instrument_id",
+      "to_product": "instrument_master",
+      "to_field": "instrument_id",
+      "description": "Trades reference the traded instrument"
+    },
+    {
+      "from_product": "trade_ledger",
+      "from_field": "account_id",
+      "to_product": "account_master",
+      "to_field": "account_id",
+      "description": "Trades are booked into accounts"
+    },
+    {
+      "from_product": "trade_ledger",
+      "from_field": "counterparty_id",
+      "to_product": "party_master",
+      "to_field": "party_id",
+      "description": "Trade counterparty links to party master"
+    },
+    {
+      "from_product": "trade_ledger",
+      "from_field": "broker_id",
+      "to_product": "party_master",
+      "to_field": "party_id",
+      "description": "Executing broker links to party master"
+    },
+    {
+      "from_product": "position_book",
+      "from_field": "instrument_id",
+      "to_product": "instrument_master",
+      "to_field": "instrument_id",
+      "description": "Positions reference the held instrument"
+    },
+    {
+      "from_product": "position_book",
+      "from_field": "account_id",
+      "to_product": "account_master",
+      "to_field": "account_id",
+      "description": "Positions belong to accounts"
+    },
+    {
+      "from_product": "account_master",
+      "from_field": "owning_party_id",
+      "to_product": "party_master",
+      "to_field": "party_id",
+      "description": "Account owner links to party master"
+    },
+    {
+      "from_product": "account_master",
+      "from_field": "custodian_party_id",
+      "to_product": "party_master",
+      "to_field": "party_id",
+      "description": "Account custodian links to party master"
+    },
+    {
+      "from_product": "fund_master",
+      "from_field": "benchmark_id",
+      "to_product": "benchmark_data",
+      "to_field": "benchmark_id",
+      "description": "Fund's benchmark links to benchmark data for comparison"
+    },
+    {
+      "from_product": "fund_master",
+      "from_field": "management_company_id",
+      "to_product": "party_master",
+      "to_field": "party_id",
+      "description": "Fund management company links to party master"
+    },
+    {
+      "from_product": "performance_data",
+      "from_field": "fund_id",
+      "to_product": "fund_master",
+      "to_field": "fund_id",
+      "description": "Performance data belongs to a fund"
+    },
+    {
+      "from_product": "risk_analytics",
+      "from_field": "entity_id",
+      "to_product": "fund_master",
+      "to_field": "fund_id",
+      "description": "Fund-level risk analytics reference the fund master"
+    },
+    {
+      "from_product": "risk_analytics",
+      "from_field": "entity_id",
+      "to_product": "instrument_master",
+      "to_field": "instrument_id",
+      "description": "Instrument-level risk analytics reference the instrument master"
+    },
+    {
+      "from_product": "corporate_actions",
+      "from_field": "instrument_id",
+      "to_product": "instrument_master",
+      "to_field": "instrument_id",
+      "description": "Corporate actions affect specific instruments"
+    }
+  ]
+}
